@@ -249,25 +249,6 @@
             margin-top: 2px;
         }
 
-        .header .btn-logout {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.2s;
-        }
-
-        .header .btn-logout:hover {
-            background: rgba(239, 68, 68, 0.3);
-        }
-
         .content {
             padding: 20px;
         }
@@ -488,12 +469,33 @@
         /* Pie de página con créditos del Autor */
         .footer-creditos {
             text-align: center;
-            padding: 12px 20px 18px 20px;
+            padding: 16px 20px 20px 20px;
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-muted);
             letter-spacing: 0.03em;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-logout-bottom {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-logout-bottom:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #ffffff;
         }
 
         /* MODAL ELEGANTE PARA EDICIÓN DE DÍA */
@@ -631,7 +633,6 @@
     <!-- VISTA 4: CALENDARIO ROSTER PRINCIPAL -->
     <div id="view-calendario" class="view-section">
         <div class="header">
-            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
             <h1 id="roster-titulo-regimen">Roster de Trabajo</h1>
             <p id="roster-nombre-usuario" class="nombre-usuario">Usuario</p>
         </div>
@@ -686,9 +687,10 @@
             </div>
         </div>
 
-        <!-- Pie de página con Autor -->
+        <!-- Pie de página con Autor y Botón de Cerrar Sesión abajo -->
         <div class="footer-creditos">
-            Autor: Amancio Alvaro
+            <span>Autor: Amancio Alvaro</span>
+            <button class="btn-logout-bottom" onclick="cerrarSesion()">Cerrar Sesión</button>
         </div>
     </div>
 
