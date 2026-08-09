@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roster de Trabajo 2026 (14x7)</title>
+    <style>
+        :root {
+            --bg-guardia: #2e7d32;
+            --text-guardia: #ffffff;
+            --bg-libre: #ffcdd2;
+            --text-libre: #c62828;
+            --primary: #1e88e5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+
+        .nav-meses {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-nav {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-nav:hover {
+            background-color: #1565c0;
+        }
+
+        #mes-titulo {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .leyenda {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .box {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+        }
+
+        .box-guardia { background-color: var(--bg-guardia); }
+        .box-libre { background-color: var(--bg-libre); border: 1px solid #ef9a9a; }
+
+        .dias-semana {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .calendario-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .dia-num {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .empty {
+            background-color: transparent;
+        }
+
+        .guardia {
+            background-color: var(--bg-guardia);
+            color: var(--text-guardia);
+        }
+
+        .libre {
+            background-color: var(--bg-libre);
+            color: var(--text-libre);
+        }
+
+        .resumen {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .resumen span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Roster de Trabajo 2026</h1>
+
+    <div class="leyenda">
+        <div class="leyenda-item">
+            <div class="box box-guardia"></div>
+            <span>Guardia (Trabajo)</span>
+        </div>
+        <div class="leyenda-item">
+            <div class="box box-libre"></div>
+            <span>Día Libre</span>
+        </div>
+    </div>
+
+    <div class="nav-meses">
+        <button class="btn-nav" onclick="cambiarMes(-1)">&#10094; Anterior</button>
+        <span id="mes-titulo">Enero 2026</span>
+        <button class="btn-nav" onclick="cambiarMes(1)">Siguiente &#10095;</button>
+    </div>
+
+    <div class="dias-semana">
+        <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+    </div>
+
+    <div id="calendario" class="calendario-grid"></div>
+
+    <div class="resumen">
+        <div>Días de Guardia: <span id="cnt-guardia" style="color: var(--bg-guardia);">0</span></div>
+        <div>Días Libres: <span id="cnt-libre" style="color: var(--text-libre);">0</span></div>
+    </div>
+</div>
+
+<script>
+    const nombresMeses = [
+        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    ];
+
+    let mesActual = 0; // 0 = Enero
+
+    // Definición de inicio de ciclo 14x7 para el año 2026
+    // Asumiendo inicio de guardia el 1 de enero de 2026
+    const fechaInicio = new Date(2026, 0, 1);
+
+    function esDiaDeGuardia(fecha) {
+        const diffTiempo = fecha - fechaInicio;
+        const diffDias = Math.floor(diffTiempo / (1000 * 60 * 60 * 24));
+        if (diffDias < 0) return true;
+        
+        const diaEnCiclo = diffDias % 21; // Ciclo total 14 + 7 = 21 días
+        return diaEnCiclo < 14; // Primeros 14 días son guardia
+    }
+
+    function renderizarCalendario() {
+        const grid = document.getElementById("calendario");
+        const titulo = document.getElementById("mes-titulo");
+        grid.innerHTML = "";
+
+        titulo.textContent = `${nombresMeses[mesActual]} 2026`;
+
+        const primerDiaMes = new Date(2026, mesActual, 1);
+        const ultimoDiaMes = new Date(2026, mesActual + 1, 0);
+
+        // Ajustar primer día de la semana (0 = Domingo -> 6, 1 = Lunes -> 0)
+        let diaInicioSemana = primerDiaMes.getDay() - 1;
+        if (diaInicioSemana === -1) diaInicioSemana = 6;
+
+        // Celdas vacías previas
+        for (let i = 0; i < diaInicioSemana; i++) {
+            const emptyCell = document.createElement("div");
+            emptyCell.className = "dia-num empty";
+            grid.appendChild(emptyCell);
+        }
+
+        let cGuardia = 0;
+        let cLibre = 0;
+
+        // Días del mes
+        for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
+            const fecha = new Date(2026, mesActual, dia);
+            const celda = document.createElement("div");
+            celda.className = "dia-num";
+            celda.textContent = dia;
+
+            if (esDiaDeGuardia(fecha)) {
+                celda.classList.add("guardia");
+                cGuardia++;
+            } else {
+                celda.classList.add("libre");
+                cLibre++;
+            }
+
+            grid.appendChild(celda);
+        }
+
+        document.getElementById("cnt-guardia").textContent = cGuardia;
+        document.getElementById("cnt-libre").textContent = cLibre;
+    }
+
+    function cambiarMes(delta) {
+        mesActual += delta;
+        if (mesActual < 0) mesActual = 0;
+        if (mesActual > 11) mesActual = 11;
+        renderizarCalendario();
+    }
+
+    // Inicializar primer renderizado
+    renderizarCalendario();
+</script>
+
+</body>
+</html>
