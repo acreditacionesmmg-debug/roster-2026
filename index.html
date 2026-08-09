@@ -3,41 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roster de Trabajo 2026 (14x7)</title>
+    <title>Control de Roster de Trabajo (14x7)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-guardia: #2e7d32;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-page: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+
+            /* Estados del Roster */
+            --bg-guardia: #059669;
+            --bg-guardia-light: #ecfdf5;
             --text-guardia: #ffffff;
-            --bg-libre: #ffcdd2;
-            --text-libre: #c62828;
-            --primary: #1e88e5;
+            
+            --bg-libre: #e11d48;
+            --bg-libre-light: #fff1f2;
+            --text-libre: #ffffff;
+
+            /* Color personalizado */
+            --verde-limon: #32cd32; /* Verde limón brillante */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            padding: 24px 16px;
         }
 
-        .container {
+        .card-container {
             width: 100%;
-            max-width: 600px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 20px;
+            max-width: 520px;
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
         }
 
-        h1 {
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #ffffff;
+            padding: 24px;
             text-align: center;
-            color: #333;
-            margin-top: 0;
         }
 
+        .header h1 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .header p.nombre-usuario {
+            font-size: 1rem;
+            color: var(--verde-limon);
+            font-weight: 600;
+            letter-spacing: 0.03em;
+        }
+
+        .content {
+            padding: 24px;
+        }
+
+        /* Leyenda */
+        .leyenda {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .leyenda-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .leyenda-item.guardia {
+            background-color: var(--bg-guardia-light);
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .leyenda-item.libre {
+            background-color: var(--bg-libre-light);
+            color: #be123c;
+            border: 1px solid #fecdd3;
+        }
+
+        .badge-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .guardia .badge-dot { background-color: var(--bg-guardia); }
+        .libre .badge-dot { background-color: var(--bg-libre); }
+
+        /* Navegación de Meses */
         .nav-meses {
             display: flex;
             justify-content: space-between;
@@ -46,135 +133,170 @@
         }
 
         .btn-nav {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
+            background-color: #f1f5f9;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s ease;
         }
 
         .btn-nav:hover {
-            background-color: #1565c0;
+            background-color: var(--accent);
+            color: #ffffff;
+            border-color: var(--accent);
         }
 
         #mes-titulo {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
         }
 
-        .leyenda {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        .leyenda-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .box {
-            width: 18px;
-            height: 18px;
-            border-radius: 4px;
-        }
-
-        .box-guardia { background-color: var(--bg-guardia); }
-        .box-libre { background-color: var(--bg-libre); border: 1px solid #ef9a9a; }
-
+        /* Días de la semana */
         .dias-semana {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            font-weight: bold;
-            color: #666;
-            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
         }
 
+        /* Grid del Calendario */
         .calendario-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 8px;
         }
 
         .dia-num {
             aspect-ratio: 1;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            transition: transform 0.1s ease;
+            position: relative;
+        }
+
+        .dia-num:not(.empty):hover {
+            transform: scale(1.05);
         }
 
         .empty {
             background-color: transparent;
         }
 
-        .guardia {
+        .dia-num.guardia {
             background-color: var(--bg-guardia);
             color: var(--text-guardia);
+            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
         }
 
-        .libre {
+        .dia-num.libre {
             background-color: var(--bg-libre);
             color: var(--text-libre);
+            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
         }
 
-        .resumen {
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
+        /* Resaltado del Día Actual */
+        .dia-num.hoy {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+            font-weight: 800;
+        }
+
+        /* Resumen de Estadísticas */
+        .resumen-card {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f8fafc;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
-            font-size: 0.9rem;
-            color: #555;
         }
 
-        .resumen span {
-            font-weight: bold;
+        .resumen-item {
+            text-align: center;
         }
+
+        .resumen-item .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .resumen-item .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .resumen-item.guardia .value { color: var(--bg-guardia); }
+        .resumen-item.libre .value { color: var(--bg-libre); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Roster de Trabajo 2026</h1>
+<div class="card-container">
+    <div class="header">
+        <h1>Roster de Trabajo (14x7)</h1>
+        <p class="nombre-usuario">Amancio Alvaro</p>
+    </div>
 
-    <div class="leyenda">
-        <div class="leyenda-item">
-            <div class="box box-guardia"></div>
-            <span>Guardia (Trabajo)</span>
+    <div class="content">
+        <!-- Leyenda -->
+        <div class="leyenda">
+            <div class="leyenda-item guardia">
+                <span class="badge-dot"></span>
+                <span>Día de Guardia (14)</span>
+            </div>
+            <div class="leyenda-item libre">
+                <span class="badge-dot"></span>
+                <span>Día Libre (7)</span>
+            </div>
         </div>
-        <div class="leyenda-item">
-            <div class="box box-libre"></div>
-            <span>Día Libre</span>
+
+        <!-- Navegador de Meses -->
+        <div class="nav-meses">
+            <button class="btn-nav" onclick="cambiarMes(-1)">&#10094;</button>
+            <span id="mes-titulo">Enero 2026</span>
+            <button class="btn-nav" onclick="cambiarMes(1)">&#10095;</button>
         </div>
-    </div>
 
-    <div class="nav-meses">
-        <button class="btn-nav" onclick="cambiarMes(-1)">&#10094; Anterior</button>
-        <span id="mes-titulo">Enero 2026</span>
-        <button class="btn-nav" onclick="cambiarMes(1)">Siguiente &#10095;</button>
-    </div>
+        <!-- Cabecera de días -->
+        <div class="dias-semana">
+            <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+        </div>
 
-    <div class="dias-semana">
-        <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
-    </div>
+        <!-- Rejilla del Calendario -->
+        <div id="calendario" class="calendario-grid"></div>
 
-    <div id="calendario" class="calendario-grid"></div>
-
-    <div class="resumen">
-        <div>Días de Guardia: <span id="cnt-guardia" style="color: var(--bg-guardia);">0</span></div>
-        <div>Días Libres: <span id="cnt-libre" style="color: var(--text-libre);">0</span></div>
+        <!-- Métricas del Mes -->
+        <div class="resumen-card">
+            <div class="resumen-item guardia">
+                <span class="label">Guardia en el mes</span>
+                <span id="cnt-guardia" class="value">0</span>
+            </div>
+            <div class="resumen-item libre">
+                <span class="label">Días libres en el mes</span>
+                <span id="cnt-libre" class="value">0</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -184,19 +306,25 @@
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     ];
 
-    let mesActual = 0; // 0 = Enero
+    // Fecha base de referencia:
+    // Miércoles 5 de Agosto de 2026 = Inicio de Guardia (Día 1 de 14)
+    const fechaBaseGuardia = new Date(2026, 7, 5); // 5 de Agosto de 2026
 
-    // Definición de inicio de ciclo 14x7 para el año 2026
-    // Asumiendo inicio de guardia el 1 de enero de 2026
-    const fechaInicio = new Date(2026, 0, 1);
+    const fechaHoy = new Date();
+    let anioActual = fechaHoy.getFullYear() >= 2026 ? fechaHoy.getFullYear() : 2026;
+    let mesActual = fechaHoy.getFullYear() >= 2026 ? fechaHoy.getMonth() : 7;
 
     function esDiaDeGuardia(fecha) {
-        const diffTiempo = fecha - fechaInicio;
-        const diffDias = Math.floor(diffTiempo / (1000 * 60 * 60 * 24));
-        if (diffDias < 0) return true;
+        const f1 = new Date(fechaBaseGuardia.getFullYear(), fechaBaseGuardia.getMonth(), fechaBaseGuardia.getDate());
+        const f2 = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+
+        const diffTiempo = f2 - f1;
+        const diffDias = Math.round(diffTiempo / (1000 * 60 * 60 * 24));
         
-        const diaEnCiclo = diffDias % 21; // Ciclo total 14 + 7 = 21 días
-        return diaEnCiclo < 14; // Primeros 14 días son guardia
+        let diaEnCiclo = diffDias % 21;
+        if (diaEnCiclo < 0) diaEnCiclo += 21;
+
+        return diaEnCiclo < 14;
     }
 
     function renderizarCalendario() {
@@ -204,16 +332,14 @@
         const titulo = document.getElementById("mes-titulo");
         grid.innerHTML = "";
 
-        titulo.textContent = `${nombresMeses[mesActual]} 2026`;
+        titulo.textContent = `${nombresMeses[mesActual]} ${anioActual}`;
 
-        const primerDiaMes = new Date(2026, mesActual, 1);
-        const ultimoDiaMes = new Date(2026, mesActual + 1, 0);
+        const primerDiaMes = new Date(anioActual, mesActual, 1);
+        const ultimoDiaMes = new Date(anioActual, mesActual + 1, 0);
 
-        // Ajustar primer día de la semana (0 = Domingo -> 6, 1 = Lunes -> 0)
         let diaInicioSemana = primerDiaMes.getDay() - 1;
         if (diaInicioSemana === -1) diaInicioSemana = 6;
 
-        // Celdas vacías previas
         for (let i = 0; i < diaInicioSemana; i++) {
             const emptyCell = document.createElement("div");
             emptyCell.className = "dia-num empty";
@@ -223,12 +349,15 @@
         let cGuardia = 0;
         let cLibre = 0;
 
-        // Días del mes
         for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
-            const fecha = new Date(2026, mesActual, dia);
+            const fecha = new Date(anioActual, mesActual, dia);
             const celda = document.createElement("div");
             celda.className = "dia-num";
             celda.textContent = dia;
+
+            if (fecha.toDateString() === fechaHoy.toDateString()) {
+                celda.classList.add("hoy");
+            }
 
             if (esDiaDeGuardia(fecha)) {
                 celda.classList.add("guardia");
@@ -241,18 +370,22 @@
             grid.appendChild(celda);
         }
 
-        document.getElementById("cnt-guardia").textContent = cGuardia;
-        document.getElementById("cnt-libre").textContent = cLibre;
+        document.getElementById("cnt-guardia").textContent = `${cGuardia} días`;
+        document.getElementById("cnt-libre").textContent = `${cLibre} días`;
     }
 
     function cambiarMes(delta) {
         mesActual += delta;
-        if (mesActual < 0) mesActual = 0;
-        if (mesActual > 11) mesActual = 11;
+        if (mesActual < 0) {
+            mesActual = 11;
+            anioActual--;
+        } else if (mesActual > 11) {
+            mesActual = 0;
+            anioActual++;
+        }
         renderizarCalendario();
     }
 
-    // Inicializar primer renderizado
     renderizarCalendario();
 </script>
 
