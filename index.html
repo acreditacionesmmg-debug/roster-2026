@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Roster de Trabajo (14x7)</title>
+    <title>Control de Roster de Trabajo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0f172a;
             --primary-light: #1e293b;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --bg-page: #f8fafc;
-            --surface: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --bg-page: #0f172a;
+            --surface: #1e293b;
+            --surface-card: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
 
             /* Estados del Roster */
-            --bg-guardia: #059669;
-            --bg-guardia-light: #ecfdf5;
-            --text-guardia: #ffffff;
-            
-            --bg-libre: #e11d48;
-            --bg-libre-light: #fff1f2;
-            --text-libre: #ffffff;
+            --bg-guardia: #10b981;
+            --bg-libre: #f43f5e;
 
-            /* Color personalizado */
-            --verde-limon: #32cd32; /* Verde limón brillante */
+            /* Excepciones */
+            --bg-falta-injust: #ef4444;
+            --bg-falta-just: #f59e0b;
+            --bg-trabajo-extra: #3b82f6;
+
+            --verde-limon: #4ade80;
+            --feriado-color: #a855f7;
         }
 
         * {
@@ -39,85 +40,261 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-page);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0b1120 0%, #151f32 100%);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 24px 16px;
+            padding: 16px;
         }
 
         .card-container {
             width: 100%;
-            max-width: 520px;
-            background: var(--surface);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-            border: 1px solid var(--border-color);
+            max-width: 480px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             overflow: hidden;
+            position: relative;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: #ffffff;
-            padding: 24px;
+        /* Secciones/Vistas */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms Styling */
+        .form-header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+            padding: 32px 24px 16px 24px;
             text-align: center;
         }
 
-        .header h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
+        .form-header .icon-badge {
+            width: 56px;
+            height: 56px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+            font-size: 24px;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
             letter-spacing: -0.02em;
-            margin-bottom: 4px;
+            color: #ffffff;
+        }
+
+        .form-header p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .form-body {
+            padding: 24px 32px 32px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--feriado-color);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            text-transform: none;
+            font-size: 0.9rem;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+            margin-top: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .link-toggle {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .link-toggle a {
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .error-msg {
+            color: #f87171;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* Header Principal */
+        .header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: #ffffff;
         }
 
         .header p.nombre-usuario {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--verde-limon);
-            font-weight: 600;
-            letter-spacing: 0.03em;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .header .btn-logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .header .btn-logout:hover {
+            background: rgba(239, 68, 68, 0.3);
         }
 
         .content {
-            padding: 24px;
+            padding: 20px;
         }
 
         /* Leyenda */
         .leyenda {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .leyenda-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .leyenda-item.guardia {
-            background-color: var(--bg-guardia-light);
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .leyenda-item.libre {
-            background-color: var(--bg-libre-light);
-            color: #be123c;
-            border: 1px solid #fecdd3;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-color);
         }
 
         .badge-dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
         }
 
@@ -129,34 +306,37 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 6px 10px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
         }
 
         .btn-nav {
-            background-color: #f1f5f9;
-            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
             border: 1px solid var(--border-color);
-            width: 38px;
-            height: 38px;
+            width: 34px;
+            height: 34px;
             border-radius: 10px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.2s ease;
         }
 
         .btn-nav:hover {
-            background-color: var(--accent);
-            color: #ffffff;
+            background: var(--accent);
             border-color: var(--accent);
         }
 
         #mes-titulo {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 800;
+            color: #ffffff;
         }
 
         /* Días de la semana */
@@ -164,69 +344,118 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            font-weight: 600;
-            font-size: 0.75rem;
+            font-weight: 700;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         /* Grid del Calendario */
         .calendario-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
+            gap: 6px;
         }
 
         .dia-num {
             aspect-ratio: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: transform 0.1s ease;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
             position: relative;
+            cursor: pointer;
+            user-select: none;
         }
 
         .dia-num:not(.empty):hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
+            z-index: 2;
         }
 
         .empty {
             background-color: transparent;
+            cursor: default;
         }
 
         .dia-num.guardia {
-            background-color: var(--bg-guardia);
-            color: var(--text-guardia);
-            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+            background: var(--bg-guardia);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
         }
 
         .dia-num.libre {
-            background-color: var(--bg-libre);
-            color: var(--text-libre);
-            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
+            background: var(--bg-libre);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+        }
+
+        /* Modificadores de Estado */
+        .dia-num.falta-injustificada {
+            background: var(--bg-falta-injust) !important;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+        }
+
+        .dia-num.falta-justificada {
+            background: var(--bg-falta-just) !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
+        }
+
+        .dia-num.trabajado-extra {
+            background: var(--bg-trabajo-extra) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+        }
+
+        /* Indicador de Feriado en Día */
+        .badge-feriado {
+            position: absolute;
+            top: 2px;
+            right: 3px;
+            font-size: 0.65rem;
+        }
+
+        /* Punto indicador de nota */
+        .dot-nota {
+            width: 5px;
+            height: 5px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 3px;
+            box-shadow: 0 0 4px #ffffff;
         }
 
         /* Resaltado del Día Actual */
         .dia-num.hoy {
-            outline: 3px solid var(--accent);
+            outline: 2px solid #ffffff;
             outline-offset: 2px;
             font-weight: 800;
         }
 
         /* Resumen de Estadísticas */
         .resumen-card {
-            margin-top: 24px;
-            padding: 16px;
-            background-color: #f8fafc;
-            border-radius: 14px;
+            margin-top: 14px;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
             border: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
+        }
+
+        .resumen-card.feriados-card {
+            margin-top: 10px;
+            background: rgba(168, 85, 247, 0.1);
+            border-color: rgba(168, 85, 247, 0.3);
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
         }
 
         .resumen-item {
@@ -234,97 +463,424 @@
         }
 
         .resumen-item .label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
-            font-weight: 500;
-            margin-bottom: 4px;
+            font-weight: 600;
+            margin-bottom: 2px;
             display: block;
         }
 
         .resumen-item .value {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
         }
 
         .resumen-item.guardia .value { color: var(--bg-guardia); }
         .resumen-item.libre .value { color: var(--bg-libre); }
+        .resumen-item.feriados .value { color: #c084fc; }
+        .resumen-item.feriados .lista-dias {
+            font-size: 0.8rem;
+            color: #e9d5ff;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* Pie de página con créditos del Autor */
+        .footer-creditos {
+            text-align: center;
+            padding: 12px 20px 18px 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.03em;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* MODAL ELEGANTE PARA EDICIÓN DE DÍA */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 16px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
     </style>
 </head>
 <body>
 
 <div class="card-container">
-    <div class="header">
-        <h1>Roster de Trabajo (14x7)</h1>
-        <p class="nombre-usuario">Amancio Alvaro</p>
+
+    <!-- VISTA 1: LOGIN -->
+    <div id="view-login" class="view-section active">
+        <div class="form-header">
+            <div class="icon-badge">🔐</div>
+            <h2>Iniciar Sesión</h2>
+            <p>Ingresa a tu cuenta para ver tu roster</p>
+        </div>
+        <div class="form-body">
+            <div class="form-group">
+                <label for="login-usuario">Nombre de Usuario</label>
+                <input type="text" id="login-usuario" placeholder="Ej. Amancio Alvaro">
+            </div>
+            <div class="form-group">
+                <label for="login-pass">Contraseña</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+            </div>
+            <p id="login-error" class="error-msg">Usuario o contraseña incorrectos.</p>
+            <button class="btn-primary" onclick="iniciarSesion()">Ingresar a mi Roster</button>
+            <div class="link-toggle">
+                ¿Aún no tienes cuenta? <a onclick="mostrarVista('view-registro')">Regístrate aquí</a>
+            </div>
+        </div>
     </div>
 
-    <div class="content">
-        <!-- Leyenda -->
-        <div class="leyenda">
-            <div class="leyenda-item guardia">
-                <span class="badge-dot"></span>
-                <span>Día de Guardia (14)</span>
+    <!-- VISTA 2: REGISTRO -->
+    <div id="view-registro" class="view-section">
+        <div class="form-header">
+            <div class="icon-badge">📋</div>
+            <h2>Crear Cuenta</h2>
+            <p>Registra tus datos para configurar tu ciclo</p>
+        </div>
+        <div class="form-body">
+            <div class="form-group">
+                <label for="reg-usuario">Nombre completo / Usuario</label>
+                <input type="text" id="reg-usuario" placeholder="Ej. Amancio Alvaro">
             </div>
-            <div class="leyenda-item libre">
-                <span class="badge-dot"></span>
-                <span>Día Libre (7)</span>
+            <div class="form-group">
+                <label for="reg-pass">Contraseña</label>
+                <input type="password" id="reg-pass" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label for="reg-pass-confirm">Confirmar Contraseña</label>
+                <input type="password" id="reg-pass-confirm" placeholder="••••••••">
+            </div>
+            <p id="reg-error" class="error-msg"></p>
+            <button class="btn-primary" onclick="registrarse()">Continuar a Roster</button>
+            <div class="link-toggle">
+                ¿Ya tienes cuenta? <a onclick="mostrarVista('view-login')">Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA 3: CONFIGURACIÓN DE ROSTER -->
+    <div id="view-roster-config" class="view-section">
+        <div class="form-header">
+            <div class="icon-badge">⚙️</div>
+            <h2>Configurar Roster</h2>
+            <p>Establece los parámetros de tu turno</p>
+        </div>
+        <div class="form-body">
+            <div class="form-group">
+                <label for="dias-trabajo">Días Trabajados (Guardia)</label>
+                <input type="number" id="dias-trabajo" value="14" min="1">
+            </div>
+            <div class="form-group">
+                <label for="dias-descanso">Días de Descanso (Libre)</label>
+                <input type="number" id="dias-descanso" value="7" min="1">
+            </div>
+            <div class="form-group">
+                <label for="fecha-inicio">Día de Inicio de Trabajo</label>
+                <input type="date" id="fecha-inicio">
+            </div>
+            <p id="config-error" class="error-msg">Por favor completa todos los campos correctamente.</p>
+            <button class="btn-primary" onclick="guardarConfiguracionRoster()">Generar Mi Calendario</button>
+        </div>
+    </div>
+
+    <!-- VISTA 4: CALENDARIO ROSTER PRINCIPAL -->
+    <div id="view-calendario" class="view-section">
+        <div class="header">
+            <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+            <h1 id="roster-titulo-regimen">Roster de Trabajo</h1>
+            <p id="roster-nombre-usuario" class="nombre-usuario">Usuario</p>
+        </div>
+
+        <div class="content">
+            <!-- Leyenda -->
+            <div class="leyenda">
+                <div class="leyenda-item guardia">
+                    <span class="badge-dot"></span>
+                    <span id="leyenda-guardia-txt">Guardia</span>
+                </div>
+                <div class="leyenda-item libre">
+                    <span class="badge-dot"></span>
+                    <span id="leyenda-libre-txt">Libre</span>
+                </div>
+            </div>
+
+            <!-- Navegador de Meses -->
+            <div class="nav-meses">
+                <button class="btn-nav" onclick="cambiarMes(-1)">&#10094;</button>
+                <span id="mes-titulo">Mes Año</span>
+                <button class="btn-nav" onclick="cambiarMes(1)">&#10095;</button>
+            </div>
+
+            <!-- Cabecera de días -->
+            <div class="dias-semana">
+                <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+            </div>
+
+            <!-- Rejilla del Calendario -->
+            <div id="calendario" class="calendario-grid"></div>
+
+            <!-- Métricas del Mes -->
+            <div class="resumen-card">
+                <div class="resumen-item guardia">
+                    <span class="label">Guardia efectiva</span>
+                    <span id="cnt-guardia" class="value">0</span>
+                </div>
+                <div class="resumen-item libre">
+                    <span class="label">Días libres reales</span>
+                    <span id="cnt-libre" class="value">0</span>
+                </div>
+            </div>
+
+            <!-- Recuadro de Feriados del Mes -->
+            <div class="resumen-card feriados-card">
+                <div class="resumen-item feriados">
+                    <span class="label">Feriados del Mes</span>
+                    <span id="cnt-feriados-txt" class="value">0 feriados</span>
+                    <div id="lista-dias-feriados" class="lista-dias">Sin feriados registrados</div>
+                </div>
             </div>
         </div>
 
-        <!-- Navegador de Meses -->
-        <div class="nav-meses">
-            <button class="btn-nav" onclick="cambiarMes(-1)">&#10094;</button>
-            <span id="mes-titulo">Enero 2026</span>
-            <button class="btn-nav" onclick="cambiarMes(1)">&#10095;</button>
+        <!-- Pie de página con Autor -->
+        <div class="footer-creditos">
+            Autor: Amancio Alvaro
         </div>
+    </div>
 
-        <!-- Cabecera de días -->
-        <div class="dias-semana">
-            <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+</div>
+
+<!-- MODAL PARA REGISTRO/EDICIÓN DE DÍA -->
+<div id="modal-dia" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-fecha-titulo">Detalles de Fecha</h3>
+            <button class="btn-close" onclick="cerrarModal()">✕</button>
         </div>
-
-        <!-- Rejilla del Calendario -->
-        <div id="calendario" class="calendario-grid"></div>
-
-        <!-- Métricas del Mes -->
-        <div class="resumen-card">
-            <div class="resumen-item guardia">
-                <span class="label">Guardia en el mes</span>
-                <span id="cnt-guardia" class="value">0</span>
+        <div class="form-group">
+            <label for="modal-estado-select">Estado del día</label>
+            <select id="modal-estado-select"></select>
+        </div>
+        <div class="form-group">
+            <div class="checkbox-group" onclick="toggleCheckbox('modal-feriado')">
+                <input type="checkbox" id="modal-feriado" onclick="event.stopPropagation()">
+                <label for="modal-feriado">🎉 Marcar como Día Feriado</label>
             </div>
-            <div class="resumen-item libre">
-                <span class="label">Días libres en el mes</span>
-                <span id="cnt-libre" class="value">0</span>
-            </div>
+        </div>
+        <div class="form-group">
+            <label for="modal-comentario">Comentario / Motivo</label>
+            <textarea id="modal-comentario" rows="3" placeholder="Escribe aquí el motivo o recuerdo..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-primary btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-primary" onclick="guardarCambioDia()">Guardar Cambios</button>
         </div>
     </div>
 </div>
 
 <script>
+    let usuarioActual = null;
+    let anioActual = new Date().getFullYear();
+    let mesActual = new Date().getMonth();
+    let fechaSeleccionadaKey = null;
+
     const nombresMeses = [
         "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
         "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
     ];
 
-    // Fecha base de referencia:
-    // Miércoles 5 de Agosto de 2026 = Inicio de Guardia (Día 1 de 14)
-    const fechaBaseGuardia = new Date(2026, 7, 5); // 5 de Agosto de 2026
+    window.addEventListener('DOMContentLoaded', () => {
+        const hoyStr = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha-inicio').value = hoyStr;
 
-    const fechaHoy = new Date();
-    let anioActual = fechaHoy.getFullYear() >= 2026 ? fechaHoy.getFullYear() : 2026;
-    let mesActual = fechaHoy.getFullYear() >= 2026 ? fechaHoy.getMonth() : 7;
+        const sesionGuardada = localStorage.getItem('sesion_activa_roster');
+        if (sesionGuardada) {
+            usuarioActual = JSON.parse(sesionGuardada);
+            cargarVistaPrincipal();
+        } else {
+            mostrarVista('view-login');
+        }
+    });
 
-    function esDiaDeGuardia(fecha) {
-        const f1 = new Date(fechaBaseGuardia.getFullYear(), fechaBaseGuardia.getMonth(), fechaBaseGuardia.getDate());
+    function mostrarVista(idVista) {
+        document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+        document.getElementById(idVista).classList.add('active');
+        ocultarErrores();
+    }
+
+    function ocultarErrores() {
+        document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+    }
+
+    function obtenerUsuarios() {
+        return JSON.parse(localStorage.getItem('app_roster_usuarios') || '{}');
+    }
+
+    function guardarUsuarios(usuarios) {
+        localStorage.setItem('app_roster_usuarios', JSON.stringify(usuarios));
+    }
+
+    function registrarse() {
+        ocultarErrores();
+        const user = document.getElementById('reg-usuario').value.trim();
+        const pass = document.getElementById('reg-pass').value;
+        const passConfirm = document.getElementById('reg-pass-confirm').value;
+        const errEl = document.getElementById('reg-error');
+
+        if (!user || !pass || !passConfirm) {
+            errEl.textContent = 'Por favor completa todos los campos.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        if (pass !== passConfirm) {
+            errEl.textContent = 'Las contraseñas no coinciden.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        const usuarios = obtenerUsuarios();
+        if (usuarios[user]) {
+            errEl.textContent = 'El usuario ya existe.';
+            errEl.style.display = 'block';
+            return;
+        }
+
+        usuarioActual = { nombre: user, password: pass, roster: null, novedades: {} };
+        usuarios[user] = usuarioActual;
+        guardarUsuarios(usuarios);
+        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+
+        mostrarVista('view-roster-config');
+    }
+
+    function iniciarSesion() {
+        ocultarErrores();
+        const user = document.getElementById('login-usuario').value.trim();
+        const pass = document.getElementById('login-pass').value;
+        const errEl = document.getElementById('login-error');
+
+        const usuarios = obtenerUsuarios();
+        if (usuarios[user] && usuarios[user].password === pass) {
+            usuarioActual = usuarios[user];
+            if (!usuarioActual.novedades) usuarioActual.novedades = {};
+            localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+            cargarVistaPrincipal();
+        } else {
+            errEl.style.display = 'block';
+        }
+    }
+
+    function guardarConfiguracionRoster() {
+        ocultarErrores();
+        const dTrabajo = parseInt(document.getElementById('dias-trabajo').value);
+        const dDescanso = parseInt(document.getElementById('dias-descanso').value);
+        const fInicio = document.getElementById('fecha-inicio').value;
+
+        if (!dTrabajo || !dDescanso || !fInicio) {
+            document.getElementById('config-error').style.display = 'block';
+            return;
+        }
+
+        const partesFecha = fInicio.split('-');
+        const fechaBase = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+
+        usuarioActual.roster = {
+            diasTrabajo: dTrabajo,
+            diasDescanso: dDescanso,
+            fechaInicio: fechaBase.toISOString()
+        };
+
+        const usuarios = obtenerUsuarios();
+        usuarios[usuarioActual.nombre] = usuarioActual;
+        guardarUsuarios(usuarios);
+        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+
+        cargarVistaPrincipal();
+    }
+
+    function cargarVistaPrincipal() {
+        if (!usuarioActual.roster) {
+            mostrarVista('view-roster-config');
+            return;
+        }
+
+        mostrarVista('view-calendario');
+        document.getElementById('roster-nombre-usuario').textContent = usuarioActual.nombre;
+        document.getElementById('roster-titulo-regimen').textContent = `Roster (${usuarioActual.roster.diasTrabajo}x${usuarioActual.roster.diasDescanso})`;
+        document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
+        document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
+
+        renderizarCalendario();
+    }
+
+    function cerrarSesion() {
+        localStorage.removeItem('sesion_activa_roster');
+        usuarioActual = null;
+        document.getElementById('login-usuario').value = '';
+        document.getElementById('login-pass').value = '';
+        mostrarVista('view-login');
+    }
+
+    function esDiaDeGuardiaBase(fecha) {
+        const roster = usuarioActual.roster;
+        const fechaBase = new Date(roster.fechaInicio);
+
+        const f1 = new Date(fechaBase.getFullYear(), fechaBase.getMonth(), fechaBase.getDate());
         const f2 = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
 
         const diffTiempo = f2 - f1;
         const diffDias = Math.round(diffTiempo / (1000 * 60 * 60 * 24));
         
-        let diaEnCiclo = diffDias % 21;
-        if (diaEnCiclo < 0) diaEnCiclo += 21;
+        const cicloTotal = roster.diasTrabajo + roster.diasDescanso;
+        let diaEnCiclo = diffDias % cicloTotal;
+        if (diaEnCiclo < 0) diaEnCiclo += cicloTotal;
 
-        return diaEnCiclo < 14;
+        return diaEnCiclo < roster.diasTrabajo;
     }
 
     function renderizarCalendario() {
@@ -348,6 +904,8 @@
 
         let cGuardia = 0;
         let cLibre = 0;
+        let diasFeriadosList = [];
+        const fechaHoy = new Date();
 
         for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
             const fecha = new Date(anioActual, mesActual, dia);
@@ -355,23 +913,70 @@
             celda.className = "dia-num";
             celda.textContent = dia;
 
+            const keyFecha = formatDateKey(fecha);
+            const esGuardia = esDiaDeGuardiaBase(fecha);
+            const novedad = (usuarioActual.novedades || {})[keyFecha];
+
             if (fecha.toDateString() === fechaHoy.toDateString()) {
                 celda.classList.add("hoy");
             }
 
-            if (esDiaDeGuardia(fecha)) {
-                celda.classList.add("guardia");
-                cGuardia++;
+            // Aplicar Estados Normales/Excepciones
+            if (novedad) {
+                if (novedad.estado === 'falta_injustificada') {
+                    celda.classList.add("falta-injustificada");
+                    cLibre++;
+                } else if (novedad.estado === 'falta_justificada') {
+                    celda.classList.add("falta-justificada");
+                } else if (novedad.estado === 'trabajado_extra') {
+                    celda.classList.add("trabajado-extra");
+                    cGuardia++;
+                } else {
+                    aplicarEstadoNormal(celda, esGuardia);
+                    if (esGuardia) cGuardia++; else cLibre++;
+                }
+
+                // Si es Feriado
+                if (novedad.esFeriado) {
+                    diasFeriadosList.push(dia);
+                    const feriadoIcon = document.createElement("span");
+                    feriadoIcon.className = "badge-feriado";
+                    feriadoIcon.textContent = "🎉";
+                    celda.appendChild(feriadoIcon);
+                }
+
+                if (novedad.comentario) {
+                    const dot = document.createElement("span");
+                    dot.className = "dot-nota";
+                    celda.appendChild(dot);
+                }
             } else {
-                celda.classList.add("libre");
-                cLibre++;
+                aplicarEstadoNormal(celda, esGuardia);
+                if (esGuardia) cGuardia++; else cLibre++;
             }
 
+            celda.onclick = () => abrirModalDia(fecha, esGuardia);
             grid.appendChild(celda);
         }
 
         document.getElementById("cnt-guardia").textContent = `${cGuardia} días`;
         document.getElementById("cnt-libre").textContent = `${cLibre} días`;
+
+        // Métricas de feriados
+        document.getElementById("cnt-feriados-txt").textContent = `${diasFeriadosList.length} feriado(s)`;
+        if (diasFeriadosList.length > 0) {
+            document.getElementById("lista-dias-feriados").textContent = `Días: ${diasFeriadosList.join(', ')}`;
+        } else {
+            document.getElementById("lista-dias-feriados").textContent = `Sin feriados marcados en este mes`;
+        }
+    }
+
+    function aplicarEstadoNormal(celda, esGuardia) {
+        if (esGuardia) {
+            celda.classList.add("guardia");
+        } else {
+            celda.classList.add("libre");
+        }
     }
 
     function cambiarMes(delta) {
@@ -386,7 +991,83 @@
         renderizarCalendario();
     }
 
-    renderizarCalendario();
+    function formatDateKey(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function toggleCheckbox(id) {
+        const checkbox = document.getElementById(id);
+        checkbox.checked = !checkbox.checked;
+    }
+
+    /* MODAL DE EDICIÓN */
+    function abrirModalDia(fecha, esGuardia) {
+        fechaSeleccionadaKey = formatDateKey(fecha);
+
+        document.getElementById('modal-fecha-titulo').textContent = `${fecha.getDate()} de ${nombresMeses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+        
+        const selectEstado = document.getElementById('modal-estado-select');
+        selectEstado.innerHTML = '';
+
+        if (esGuardia) {
+            selectEstado.innerHTML = `
+                <option value="normal">🟢 Día de Guardia (Normal)</option>
+                <option value="falta_injustificada">🔴 Falta Injustificada</option>
+                <option value="falta_justificada">🟡 Falta Justificada</option>
+            `;
+        } else {
+            selectEstado.innerHTML = `
+                <option value="normal">🔴 Día Libre (Normal)</option>
+                <option value="trabajado_extra">🔵 Bajada Trabajada (Día Trabajado)</option>
+            `;
+        }
+
+        const novedadExistente = (usuarioActual.novedades || {})[fechaSeleccionadaKey];
+        if (novedadExistente) {
+            selectEstado.value = novedadExistente.estado || 'normal';
+            document.getElementById('modal-feriado').checked = !!novedadExistente.esFeriado;
+            document.getElementById('modal-comentario').value = novedadExistente.comentario || '';
+        } else {
+            selectEstado.value = 'normal';
+            document.getElementById('modal-feriado').checked = false;
+            document.getElementById('modal-comentario').value = '';
+        }
+
+        document.getElementById('modal-dia').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-dia').style.display = 'none';
+    }
+
+    function guardarCambioDia() {
+        const estado = document.getElementById('modal-estado-select').value;
+        const esFeriado = document.getElementById('modal-feriado').checked;
+        const comentario = document.getElementById('modal-comentario').value.trim();
+
+        if (!usuarioActual.novedades) usuarioActual.novedades = {};
+
+        if (estado === 'normal' && !esFeriado && !comentario) {
+            delete usuarioActual.novedades[fechaSeleccionadaKey];
+        } else {
+            usuarioActual.novedades[fechaSeleccionadaKey] = {
+                estado: estado,
+                esFeriado: esFeriado,
+                comentario: comentario
+            };
+        }
+
+        const usuarios = obtenerUsuarios();
+        usuarios[usuarioActual.nombre] = usuarioActual;
+        guardarUsuarios(usuarios);
+        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+
+        cerrarModal();
+        renderizarCalendario();
+    }
 </script>
 
 </body>
