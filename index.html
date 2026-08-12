@@ -3,82 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de Roster de Trabajo</title>
+    <title>Aplicativo Roster Laboral - Licencia y Sistema</title>
+    
+    <!-- Bootstrap & FontAwesome para la vista de pago -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Google Fonts para la vista del Roster -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
+        /* Estilos generales del activador */
+        body.activador-body {
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .payment-card { 
+            max-width: 580px; 
+            margin: 30px auto; 
+            background: white; 
+            padding: 35px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+        }
+
+        .method-badge { 
+            background: #f8f9fa; 
+            border: 2px solid #e9ecef; 
+            border-radius: 10px; 
+            padding: 12px; 
+            margin-bottom: 10px; 
+            display: flex; 
+            align-items: center; 
+            transition: all 0.2s; 
+        }
+
+        .method-badge:hover { border-color: #009ee3; background: #f0faff; }
+        .btn-mp { background-color: #009ee3; color: white; border: none; font-size: 17px; padding: 14px; border-radius: 10px; font-weight: bold; }
+        .btn-mp:hover { background-color: #0081bf; color: white; }
+        .whatsapp-link { color: #25d366; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; transition: color 0.2s; }
+        .whatsapp-link:hover { color: #1ebe5d; text-decoration: underline; }
+        .section-box { background: #fafbfc; border: 1px solid #e1e4e8; border-radius: 12px; padding: 20px; margin-top: 20px; }
+
+        /* Estilos generales del sistema Roster */
         :root {
+            --bg-body: linear-gradient(135deg, #0b1120 0%, #151f32 100%);
             --primary: #0f172a;
             --primary-light: #1e293b;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
-            --bg-page: #0f172a;
-            --surface: #1e293b;
-            --surface-card: #0f172a;
+            --surface: #131d31;
+            --surface-card: #0d1527;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #334155;
+            --border-color: #273549;
+            --input-bg: rgba(15, 23, 42, 0.7);
 
-            /* Estados del Roster */
             --bg-guardia: #10b981;
             --bg-libre: #f43f5e;
-
-            /* Excepciones */
             --bg-falta-injust: #ef4444;
             --bg-falta-just: #f59e0b;
             --bg-trabajo-extra: #3b82f6;
 
             --verde-limon: #4ade80;
-            --feriado-color: #a855f7;
+            --purple-card-bg: rgba(126, 34, 206, 0.15);
+            --purple-card-border: rgba(168, 85, 247, 0.4);
+            --purple-card-text: #c084fc;
+            
+            --red-btn: #ef4444;
+            --red-btn-hover: #dc2626;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
+        body.roster-body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0b1120 0%, #151f32 100%);
+            background: var(--bg-body);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 16px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        body.roster-body.light-mode {
+            --bg-body: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --primary: #ffffff;
+            --primary-light: #f8fafc;
+            --surface: #ffffff;
+            --surface-card: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --input-bg: #f1f5f9;
+            --purple-card-bg: rgba(147, 51, 234, 0.08);
+            --purple-card-border: rgba(147, 51, 234, 0.25);
+            --purple-card-text: #7e22ce;
         }
 
         .card-container {
             width: 100%;
             max-width: 480px;
-            background: rgba(30, 41, 59, 0.7);
+            background: var(--surface);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
             overflow: hidden;
             position: relative;
         }
 
-        /* Secciones/Vistas */
-        .view-section {
-            display: none;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-
-        .view-section.active {
-            display: block;
-        }
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Forms Styling */
         .form-header {
             background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
             padding: 32px 24px 16px 24px;
@@ -86,991 +133,1853 @@
         }
 
         .form-header .icon-badge {
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             background: rgba(59, 130, 246, 0.15);
             border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px auto;
-            font-size: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px auto; font-size: 24px;
         }
 
-        .form-header h2 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-        }
+        .form-header h2 { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
+        .form-header p { font-size: 0.875rem; color: var(--text-muted); margin-top: 6px; }
 
-        .form-header p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
+        .form-body { padding: 24px 32px 32px 32px; }
 
-        .form-body {
-            padding: 24px 32px 32px 32px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
+        .form-group { margin-bottom: 16px; }
         .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 8px;
+            display: block; font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em;
+            color: var(--text-muted); margin-bottom: 6px;
         }
 
         .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 14px 16px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            font-size: 0.95rem;
-            color: #ffffff;
-            outline: none;
-            transition: all 0.2s;
-            font-family: inherit;
+            width: 100%; padding: 12px 14px;
+            background: var(--input-bg);
+            border-radius: 12px; border: 1px solid var(--border-color);
+            font-size: 0.9rem; color: var(--text-main);
+            outline: none; transition: all 0.2s; font-family: inherit;
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
 
         .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 12px 16px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            background: var(--input-bg); padding: 10px 14px;
+            border-radius: 12px; border: 1px solid var(--border-color); cursor: pointer;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--feriado-color);
-            cursor: pointer;
-        }
-
-        .checkbox-group label {
-            margin-bottom: 0;
-            text-transform: none;
-            font-size: 0.9rem;
-            color: #ffffff;
-            cursor: pointer;
-        }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+        .checkbox-group label { margin-bottom: 0; text-transform: none; font-size: 0.85rem; color: var(--text-main); }
 
         .btn-primary {
-            width: 100%;
-            padding: 14px;
+            width: 100%; padding: 12px;
             background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-            color: #ffffff;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
-            margin-top: 8px;
+            color: #ffffff; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            transition: all 0.2s ease; margin-top: 8px;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 24px -5px rgba(59, 130, 246, 0.5);
-        }
+        .btn-primary:hover { transform: translateY(-1px); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border: 1px solid var(--border-color);
-            box-shadow: none;
-        }
+        .link-toggle { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .link-toggle a { color: var(--accent); font-weight: 700; text-decoration: none; cursor: pointer; }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+        .error-msg { color: #f87171; font-size: 0.8rem; margin-top: 6px; display: none; font-weight: 600; }
 
-        .link-toggle {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .link-toggle a {
-            color: var(--accent);
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .error-msg {
-            color: #f87171;
-            font-size: 0.8rem;
-            margin-top: 6px;
-            display: none;
-            font-weight: 600;
-        }
-
-        /* Header Principal */
         .header {
             background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-            padding: 24px;
-            text-align: center;
-            position: relative;
-            border-bottom: 1px solid var(--border-color);
+            padding: 24px; text-align: center; position: relative; border-bottom: 1px solid var(--border-color);
         }
+        .header h1 { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+        .header p.nombre-usuario { font-size: 0.9rem; color: var(--verde-limon); font-weight: 700; margin-top: 2px; }
+        .estado-acceso { display:inline-flex; margin-top:8px; padding:5px 10px; border-radius:999px; background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.25); color:var(--text-muted); font-size:.68rem; font-weight:700; }
 
-        .header h1 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            letter-spacing: -0.01em;
-            color: #ffffff;
+        .btn-config-icon {
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color);
+            border-radius: 12px; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.2rem; transition: all 0.2s;
         }
+        .btn-config-icon:hover { background: var(--accent); color: white; }
 
-        .header p.nombre-usuario {
-            font-size: 0.9rem;
-            color: var(--verde-limon);
-            font-weight: 700;
-            margin-top: 2px;
-        }
+        .content { padding: 20px; }
 
-        .content {
-            padding: 20px;
-        }
-
-        /* Leyenda */
-        .leyenda {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
+        .leyenda { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .leyenda-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+            border-radius: 10px; font-size: 0.75rem; font-weight: 700;
+            background: var(--input-bg); border: 1px solid var(--border-color);
         }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
+        .badge-dot { width: 8px; height: 8px; border-radius: 50%; }
         .guardia .badge-dot { background-color: var(--bg-guardia); }
         .libre .badge-dot { background-color: var(--bg-libre); }
 
-        /* Navegación de Meses */
         .nav-meses {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            background: rgba(15, 23, 42, 0.4);
-            padding: 6px 10px;
-            border-radius: 14px;
-            border: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; background: var(--input-bg);
+            padding: 6px 10px; border-radius: 14px; border: 1px solid var(--border-color);
         }
 
         .btn-nav {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-            border: 1px solid var(--border-color);
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.05); color: var(--text-main);
+            border: 1px solid var(--border-color); width: 34px; height: 34px;
+            border-radius: 10px; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; font-size: 0.9rem;
         }
 
-        .btn-nav:hover {
-            background: var(--accent);
-            border-color: var(--accent);
-        }
+        #mes-titulo { font-size: 1rem; font-weight: 800; }
 
-        #mes-titulo {
-            font-size: 1rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        /* Días de la semana */
         .dias-semana {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 8px;
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            text-align: center; font-weight: 700; font-size: 0.7rem;
+            color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;
         }
 
-        /* Grid del Calendario */
-        .calendario-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
+        .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 
         .dia-num {
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            position: relative;
-            cursor: pointer;
-            user-select: none;
+            aspect-ratio: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; border-radius: 12px;
+            font-weight: 700; font-size: 0.85rem; transition: transform 0.15s ease;
+            position: relative; cursor: pointer; user-select: none;
         }
+        .dia-num:not(.empty):hover { transform: scale(1.08); z-index: 2; }
+        .empty { background-color: transparent; cursor: default; }
 
-        .dia-num:not(.empty):hover {
-            transform: scale(1.08);
-            z-index: 2;
-        }
+        .dia-num.guardia { background: var(--bg-guardia); color: #ffffff; }
+        .dia-num.libre { background: var(--bg-libre); color: #ffffff; }
+        .dia-num.falta-injustificada { background: var(--bg-falta-injust) !important; color: #ffffff; }
+        .dia-num.falta-justificada { background: var(--bg-falta-just) !important; color: #ffffff; }
+        .dia-num.trabajado-extra { background: var(--bg-trabajo-extra) !important; color: #ffffff; }
+        .badge-feriado { position: absolute; top: 2px; right: 3px; font-size: 0.65rem; }
+        .dot-nota { width: 5px; height: 5px; background-color: #ffffff; border-radius: 50%; position: absolute; bottom: 3px; }
+        .dia-num.hoy { outline: 2px solid var(--text-main); outline-offset: 2px; }
 
-        .empty {
-            background-color: transparent;
-            cursor: default;
-        }
-
-        .dia-num.guardia {
-            background: var(--bg-guardia);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
-        }
-
-        .dia-num.libre {
-            background: var(--bg-libre);
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
-        }
-
-        /* Modificadores de Estado */
-        .dia-num.falta-injustificada {
-            background: var(--bg-falta-injust) !important;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
-        }
-
-        .dia-num.falta-justificada {
-            background: var(--bg-falta-just) !important;
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
-        }
-
-        .dia-num.trabajado-extra {
-            background: var(--bg-trabajo-extra) !important;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
-        }
-
-        /* Indicador de Feriado en Día */
-        .badge-feriado {
-            position: absolute;
-            top: 2px;
-            right: 3px;
-            font-size: 0.65rem;
-        }
-
-        /* Punto indicador de nota */
-        .dot-nota {
-            width: 5px;
-            height: 5px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 3px;
-            box-shadow: 0 0 4px #ffffff;
-        }
-
-        /* Resaltado del Día Actual */
-        .dia-num.hoy {
-            outline: 2px solid #ffffff;
-            outline-offset: 2px;
-            font-weight: 800;
-        }
-
-        /* Resumen de Estadísticas */
         .resumen-card {
-            margin-top: 14px;
-            padding: 14px;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
+            margin-top: 14px; padding: 16px; background: var(--input-bg);
+            border-radius: 18px; border: 1px solid var(--border-color); display: flex; justify-content: space-around;
         }
-
-        .resumen-card.feriados-card {
-            margin-top: 10px;
-            background: rgba(168, 85, 247, 0.1);
-            border-color: rgba(168, 85, 247, 0.3);
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .resumen-item {
-            text-align: center;
-        }
-
-        .resumen-item .label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 2px;
-            display: block;
-        }
-
-        .resumen-item .value {
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
-
+        .resumen-item { text-align: center; }
+        .resumen-item .label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; display: block; margin-bottom: 4px; }
+        .resumen-item .value { font-size: 1.25rem; font-weight: 800; }
         .resumen-item.guardia .value { color: var(--bg-guardia); }
         .resumen-item.libre .value { color: var(--bg-libre); }
-        .resumen-item.feriados .value { color: #c084fc; }
-        .resumen-item.feriados .lista-dias {
-            font-size: 0.8rem;
-            color: #e9d5ff;
-            font-weight: 700;
-            margin-top: 2px;
+
+        .feriados-card-purple {
+            margin-top: 12px; padding: 16px;
+            background: var(--purple-card-bg);
+            border: 1px solid var(--purple-card-border);
+            border-radius: 18px; text-align: center;
+            box-shadow: 0 4px 20px rgba(147, 51, 234, 0.1);
+        }
+        .feriados-card-purple .title {
+            font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .feriados-card-purple .count {
+            font-size: 1.35rem; font-weight: 800; color: var(--purple-card-text); margin: 4px 0;
+        }
+        .feriados-card-purple .dias-list {
+            font-size: 0.8rem; font-weight: 600; color: var(--text-main); opacity: 0.9;
         }
 
-        /* Pie de página con créditos del Autor */
         .footer-creditos {
-            text-align: center;
-            padding: 16px 20px 20px 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            letter-spacing: 0.03em;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
+            text-align: center; padding: 18px; font-size: 0.75rem;
+            color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
         }
 
         .btn-logout-bottom {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 8px 18px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-weight: 700;
+            background: rgba(239, 68, 68, 0.15); color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3); padding: 9px 20px;
+            border-radius: 12px; font-size: 0.8rem; cursor: pointer; font-weight: 700;
             transition: all 0.2s;
         }
+        .btn-logout-bottom:hover { background: rgba(239, 68, 68, 0.25); }
 
-        .btn-logout-bottom:hover {
-            background: rgba(239, 68, 68, 0.3);
-            color: #ffffff;
-        }
-
-        /* MODAL ELEGANTE PARA EDICIÓN DE DÍA */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-            animation: fadeIn 0.2s ease;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 7, 18, 0.82); backdrop-filter: blur(10px);
+            display: none; justify-content: center; align-items: center; z-index: 1000; padding: 16px;
         }
-
         .modal-content {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 400px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            background: var(--surface); border: 1px solid var(--border-color);
+            border-radius: 28px; width: 100%; max-width: 460px; padding: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); max-height: 90vh; overflow-y: auto;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        
+        .btn-close-red {
+            background: var(--red-btn); color: #ffffff;
+            border: none; border-radius: 50%;
+            width: 32px; height: 32px; font-size: 1rem;
+            font-weight: 800; cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+            transition: all 0.2s ease;
+        }
+        .btn-close-red:hover {
+            background: var(--red-btn-hover);
+            transform: scale(1.08);
+            box-shadow: 0 0 16px rgba(239, 68, 68, 0.7);
         }
 
-        .modal-header {
+        .accordion-item {
+            border: 1px solid var(--border-color); border-radius: 16px;
+            margin-bottom: 12px; overflow: hidden; background: var(--input-bg);
+            transition: border-color 0.2s;
+        }
+        .accordion-header {
+            width: 100%; padding: 14px 18px; background: transparent; border: none;
+            color: var(--text-main); font-weight: 700; font-size: 0.85rem;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; text-transform: uppercase; letter-spacing: 0.03em;
+        }
+        .accordion-content { display: none; padding: 18px; border-top: 1px solid var(--border-color); background: var(--surface-card); }
+        .accordion-content.open { display: block; }
+
+        .submodulo-title {
+            font-size: 0.8rem; font-weight: 800; color: var(--accent);
+            margin: 14px 0 10px 0; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        
+        .status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 8px; font-weight: 700; }
+        .status-badge.ok { background: rgba(74, 222, 128, 0.2); color: var(--verde-limon); border: 1px solid rgba(74, 222, 128, 0.3); }
+        .status-badge.no { background: rgba(244, 63, 94, 0.2); color: var(--bg-libre); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+        .btn-red-action {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white; border: none; font-weight: 700;
+        }
+        .btn-red-action:hover { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+
+        .resumen-salario-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .resumen-salario-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
         }
+        .resumen-salario-item:last-child { border-bottom: none; }
+        .resumen-salario-item .lbl { color: var(--text-muted); font-weight: 600; }
+        .resumen-salario-item .val { font-weight: 800; color: var(--text-main); }
 
-        .modal-header h3 {
-            font-size: 1.1rem;
-            font-weight: 800;
+        /* Refinamiento visual profesional del panel y calendario */
+        body.roster-body { align-items: flex-start; padding: 32px 18px; }
+        .card-container { box-shadow: 0 30px 80px rgba(2, 6, 23, .48); }
+        .card-container:has(#view-calendario.active) { max-width: 980px; }
+        #view-calendario .header { padding: 28px 34px; text-align: left; }
+        #view-calendario .header h1 { font-size: 1.45rem; letter-spacing: -.03em; }
+        #view-calendario .content { padding: 28px 34px 34px; }
+        #view-calendario .leyenda { display:flex; flex-wrap:wrap; gap:8px; }
+        #view-calendario .leyenda-item { min-width: 140px; }
+        .nav-meses { padding: 10px 12px; margin: 8px 0 18px; }
+        .btn-nav { width: 42px; height: 42px; border-radius: 12px; }
+        #mes-titulo { font-size: 1.08rem; text-transform: capitalize; }
+        .dias-semana { padding: 0 4px; font-size: .72rem; letter-spacing: .08em; }
+        .calendario-grid { gap: 9px; }
+        .dia-num { aspect-ratio: 1.18; border-radius: 14px; border: 1px solid rgba(255,255,255,.13); font-size: .92rem; box-shadow: inset 0 1px rgba(255,255,255,.13); }
+        .dia-num:not(.empty):hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(2,6,23,.24); }
+        .dia-num.hoy { outline: 3px solid #f8fafc; outline-offset: 2px; }
+        .resumen-card { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:12px; }
+        .resumen-item { padding:14px; background:var(--surface-card); border:1px solid var(--border-color); border-radius:14px; }
+        .distribucion-roster { margin-top:12px; padding:16px; border:1px solid var(--border-color); border-radius:16px; background:var(--input-bg); }
+        .distribucion-head { display:flex; justify-content:space-between; font-size:.76rem; font-weight:700; color:var(--text-muted); margin-bottom:9px; }
+        .distribucion-bar { height:10px; display:flex; overflow:hidden; border-radius:999px; background:var(--surface-card); }
+        .distribucion-bar .trabajo { background:linear-gradient(90deg,#059669,#34d399); transition:width .35s ease; }
+        .distribucion-bar .descanso { background:linear-gradient(90deg,#e11d48,#fb7185); transition:width .35s ease; }
+        .modal-content { max-width: 620px; }
+        .accordion-item { box-shadow:0 8px 24px rgba(2,6,23,.12); }
+        .accordion-header:hover { background:rgba(59,130,246,.08); }
+        .form-group input, .form-group select, .form-group textarea { min-height:45px; }
+        @media (max-width: 640px) {
+            body.roster-body { padding: 0; }
+            .card-container, .card-container:has(#view-calendario.active) { max-width:none; min-height:100vh; border-radius:0; }
+            #view-calendario .header { padding:20px 16px; }
+            #view-calendario .content { padding:18px 10px 24px; overflow:hidden; }
+            #view-calendario .leyenda { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+            #view-calendario .leyenda-item { min-width:0; padding:8px; }
+            .dias-semana, .calendario-grid { grid-template-columns:repeat(7,minmax(0,1fr)); width:100%; }
+            .dias-semana { font-size:.62rem; letter-spacing:0; }
+            .calendario-grid { gap:4px; }
+            .dia-num { min-width:0; width:100%; aspect-ratio:1; border-radius:9px; font-size:.76rem; }
+            .badge-feriado { top:1px; right:2px; font-size:.48rem; }
+            .resumen-card { gap:7px; padding:8px; }
+            .resumen-item { padding:11px 6px; }
+            .resumen-item .value { font-size:1.05rem; }
+            .distribucion-roster { padding:13px; }
         }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
+        @media (min-width: 641px) and (max-width: 1024px) {
+            body.roster-body { padding:20px; }
+            .card-container:has(#view-calendario.active) { max-width:820px; }
+            #view-calendario .content { padding:24px; }
+            .calendario-grid { gap:7px; }
         }
     </style>
 </head>
-<body>
+<body id="body-main" class="activador-body">
 
-<div class="card-container">
+    <!-- SECCIÓN 1: ACTIVADOR Y PAGO DE LICENCIA -->
+    <div id="section-activador" class="container">
+        <div class="payment-card">
+            <!-- Encabezado del Producto -->
+            <div class="text-center mb-4">
+                <span class="badge bg-secondary mb-2">Servik</span>
+                <h3>Aplicativo Roster Laboral</h3>
+                <p class="text-muted small">Acceso al sistema y herramientas de gestión</p>
+            </div>
 
-    <!-- VISTA 1: LOGIN -->
-    <div id="view-login" class="view-section active">
-        <div class="form-header">
-            <div class="icon-badge">🔐</div>
-            <h2>Iniciar Sesión</h2>
-            <p>Ingresa a tu cuenta para ver tu roster</p>
-        </div>
-        <div class="form-body">
-            <div class="form-group">
-                <label for="login-usuario">Nombre de Usuario</label>
-                <input type="text" id="login-usuario" placeholder="Ej. Amancio Alvaro">
+            <!-- Resumen de Costo -->
+            <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4 py-3">
+                <span class="fw-semibold text-secondary">Total a cancelar:</span>
+                <span class="fs-4 fw-bold text-dark">S/. 15.00</span>
             </div>
-            <div class="form-group">
-                <label for="login-pass">Contraseña</label>
-                <input type="password" id="login-pass" placeholder="••••••••">
+
+            <!-- Métodos de Pago Informativos -->
+            <h6 class="text-secondary mb-3 fw-bold">Elige tu método preferido en el siguiente paso:</h6>
+            
+            <div class="method-badge">
+                <i class="fas fa-mobile-alt fa-2x me-3" style="color: #7413dc;"></i>
+                <div>
+                    <strong>Yape / Plin</strong>
+                    <div class="small text-muted">Pago inmediato escaneando desde tu celular</div>
+                </div>
             </div>
-            <p id="login-error" class="error-msg">Usuario o contraseña incorrectos.</p>
-            <button class="btn-primary" onclick="iniciarSesion()">Ingresar a mi Roster</button>
-            <div class="link-toggle">
-                ¿Aún no tienes cuenta? <a onclick="mostrarVista('view-registro')">Regístrate aquí</a>
+
+            <div class="method-badge">
+                <i class="fas fa-credit-card fa-2x text-primary me-3"></i>
+                <div>
+                    <strong>Tarjeta de Crédito o Débito</strong>
+                    <div class="small text-muted">Visa, Mastercard, American Express</div>
+                </div>
+            </div>
+
+            <div class="method-badge mb-4">
+                <i class="fas fa-university fa-2x text-warning me-3"></i>
+                <div>
+                    <strong>Banca por internet o Agentes</strong>
+                    <div class="small text-muted">BCP, BBVA, Interbank, PagoEfectivo</div>
+                </div>
+            </div>
+
+            <!-- Botón de Mercado Pago -->
+            <a href="https://mpago.la/2n2RAUh" target="_blank" class="btn btn-mp w-100 shadow-sm mb-3">
+                <i class="fas fa-lock me-2"></i> Continuar con el Pago Seguro
+            </a>
+
+            <!-- PASO 1: YA PAGASTE -> REGISTRAR SOLICITUD -->
+            <div class="section-box border-primary bg-light" id="box-paso1-solicitud">
+                <h5 class="mb-2 text-center text-primary" style="font-size: 16px;"><i class="fas fa-paper-plane me-2"></i>1. ¿Ya pagaste? Registra tu solicitud</h5>
+                <p class="text-muted text-center small mb-3">Envíanos tus datos para que el administrador te asigne un código.</p>
+                <form id="formSolicitud" onsubmit="enviarSolicitud(event)">
+                    <div class="mb-2">
+                        <label class="form-label small text-muted">Correo con el que pagaste:</label>
+                        <input type="email" id="emailSolicitud" class="form-control form-control-sm" placeholder="tu-correo@gmail.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small text-muted">Aplicativo a solicitar:</label>
+                        <select id="nombreAplicativo" class="form-select form-select-sm" required>
+                            <option value="" selected disabled>Selecciona...</option>
+                            <option value="Aplicativo Roster Laboral">Aplicativo Roster Laboral</option>
+                            <option value="Sistema de Control de Inventarios">Sistema de Control de Inventarios</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="btnEnviarSol" class="btn btn-primary btn-sm w-100 fw-bold">Enviar Solicitud al Admin</button>
+                    <div id="resultadoSolicitud" class="mt-2 text-center small"></div>
+                </form>
+            </div>
+
+            <!-- PASO 2: TIENES CÓDIGO -> ACTIVAR LICENCIA -->
+            <div class="section-box">
+                <h5 class="mb-2 text-center" style="font-size: 16px;"><i class="fas fa-key text-warning me-2"></i>2. ¿Ya tienes tu código? Activa tu acceso</h5>
+                <p class="text-muted text-center small mb-3">Ingresa el código que te envió el administrador.</p>
+                <div class="mb-2">
+                    <label class="form-label small text-muted">Correo electrónico:</label>
+                    <input type="email" id="emailCliente" class="form-control form-control-sm" placeholder="tu-correo@gmail.com">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small text-muted">Código de activación:</label>
+                    <input type="text" id="codigoLicencia" class="form-control form-control-sm" placeholder="Ej: ROSTER-2026">
+                </div>
+                <button onclick="verificarLicencia()" class="btn btn-success btn-sm w-100 fw-bold">Verificar y Activar Acceso</button>
+                <div id="resultadoActivacion" class="mt-2 text-center small"></div>
+            </div>
+
+            <!-- Soporte -->
+            <div class="text-center mt-3 pt-3 border-top">
+                <p class="small text-muted mb-2">
+                    <i class="fas fa-shield-alt text-success"></i> Procesado de forma segura por Mercado Pago
+                </p>
+                <p class="small mb-0 text-muted">
+                    ¿Tienes problemas con tu pago o activación? 
+                    <a href="https://wa.me/51941040184?text=Hola,%20tengo%20una%20consulta%20sobre%20el%20pago%20del%20Aplicativo%20Roster%20Laboral" target="_blank" class="whatsapp-link ms-1">
+                        <i class="fab fa-whatsapp fa-lg me-1"></i> Escríbenos aquí
+                    </a>
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- VISTA 2: REGISTRO -->
-    <div id="view-registro" class="view-section">
-        <div class="form-header">
-            <div class="icon-badge">📋</div>
-            <h2>Crear Cuenta</h2>
-            <p>Registra tus datos para configurar tu ciclo</p>
+
+    <!-- SECCIÓN 2: SISTEMA ROSTER Y BOLETA DE PAGO (INICIALMENTE OCULTO) -->
+    <div id="section-roster" style="display: none; width: 100%;">
+        <div class="card-container">
+
+            <!-- LOGIN -->
+            <div id="view-login" class="view-section active">
+                <div class="form-header">
+                    <div class="icon-badge">🔐</div>
+                    <h2>Iniciar Sesión</h2>
+                    <p>Ingresa tus credenciales para continuar</p>
+                </div>
+                <div class="form-body">
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <input type="text" id="login-usuario" placeholder="Ej. Amancio Alvaro">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="login-pass" placeholder="••••••••">
+                    </div>
+                    <p id="login-error" class="error-msg">Usuario o contraseña incorrectos.</p>
+                    <button class="btn-primary" onclick="iniciarSesion()">Ingresar</button>
+                    <div class="link-toggle">
+                        ¿No tienes cuenta? <a onclick="mostrarVista('view-registro')">Regístrate</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTRO -->
+            <div id="view-registro" class="view-section">
+                <div class="form-header">
+                    <div class="icon-badge">📋</div>
+                    <h2>Crear Cuenta</h2>
+                </div>
+                <div class="form-body">
+                    <div class="form-group">
+                        <label>Usuario</label>
+                        <input type="text" id="reg-usuario" placeholder="Ej. Amancio Alvaro">
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="reg-pass" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar Contraseña</label>
+                        <input type="password" id="reg-pass-confirm" placeholder="••••••••">
+                    </div>
+                    <p id="reg-error" class="error-msg"></p>
+                    <button class="btn-primary" onclick="registrarse()">Registrarse</button>
+                    <div class="link-toggle">
+                        ¿Ya tienes cuenta? <a onclick="mostrarVista('view-login')">Inicia sesión</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROSTER CONFIG -->
+            <div id="view-roster-config" class="view-section">
+                <div class="form-header">
+                    <div class="icon-badge">⚙️</div>
+                    <h2>Configurar Régimen</h2>
+                </div>
+                <div class="form-body">
+                    <div class="form-group">
+                        <label>Días Trabajados (Guardia)</label>
+                        <input type="number" id="dias-trabajo" value="14" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Días Descanso (Libre)</label>
+                        <input type="number" id="dias-descanso" value="7" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Inicio</label>
+                        <input type="date" id="fecha-inicio">
+                    </div>
+                    <button class="btn-primary" onclick="guardarConfiguracionRoster()">Generar Calendario</button>
+                </div>
+            </div>
+
+            <!-- VISTA PRINCIPAL -->
+            <div id="view-calendario" class="view-section">
+                <div class="header">
+                    <h1 id="roster-titulo-regimen">Roster de Trabajo</h1>
+                    <p id="roster-nombre-usuario" class="nombre-usuario">Usuario</p>
+                    <span id="roster-estado-acceso" class="estado-acceso">Comprobando acceso…</span>
+                    <button class="btn-config-icon" onclick="abrirModalConfiguracion()" title="Configuración">⚙️</button>
+                </div>
+
+                <div class="content">
+                    <div class="leyenda">
+                        <div class="leyenda-item guardia"><span class="badge-dot"></span><span id="leyenda-guardia-txt">Guardia</span></div>
+                        <div class="leyenda-item libre"><span class="badge-dot"></span><span id="leyenda-libre-txt">Libre</span></div>
+                    </div>
+
+                    <div class="nav-meses">
+                        <button class="btn-nav" onclick="cambiarMes(-1)">&#10094;</button>
+                        <span id="mes-titulo">Mes Año</span>
+                        <button class="btn-nav" onclick="cambiarMes(1)">&#10095;</button>
+                    </div>
+
+                    <div class="dias-semana">
+                        <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+                    </div>
+
+                    <div id="calendario" class="calendario-grid"></div>
+
+                    <div class="resumen-card">
+                        <div class="resumen-item guardia">
+                            <span class="label">Guardia efectiva</span>
+                            <span id="cnt-guardia" class="value">0 días</span>
+                        </div>
+                        <div class="resumen-item libre">
+                            <span class="label">Días libres reales</span>
+                            <span id="cnt-libre" class="value">0 días</span>
+                        </div>
+                    </div>
+
+                    <div class="distribucion-roster" aria-label="Distribución mensual del roster">
+                        <div class="distribucion-head"><span>Distribución del mes</span><span id="distribucion-pct">0% guardia</span></div>
+                        <div class="distribucion-bar"><span id="barra-guardia" class="trabajo"></span><span id="barra-libre" class="descanso"></span></div>
+                    </div>
+
+                    <div class="feriados-card-purple">
+                        <div class="title">Feriados del Mes</div>
+                        <div id="cnt-feriados-txt" class="count">0 feriado(s)</div>
+                        <div id="dias-feriados-txt" class="dias-list">Días: Ninguno</div>
+                    </div>
+                </div>
+
+                <div class="footer-creditos">
+                    <span>Autor: Amancio Alvaro</span>
+                    <button class="btn-logout-bottom" onclick="cerrarSesion()">Cerrar Sesión</button>
+                </div>
+            </div>
+
         </div>
-        <div class="form-body">
-            <div class="form-group">
-                <label for="reg-usuario">Nombre completo / Usuario</label>
-                <input type="text" id="reg-usuario" placeholder="Ej. Amancio Alvaro">
+
+        <!-- MODAL MENU CONFIGURACION -->
+        <div id="modal-configuracion" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ Configuración del Sistema</h3>
+                    <button class="btn-close-red" onclick="cerrarModalConfiguracion()" title="Cerrar">✕</button>
+                </div>
+                
+                <div id="accordion-container">
+                    
+                    <!-- PERFIL -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion('acc-perfil')">👤 PERFIL DE USUARIO <span>▼</span></button>
+                        <div id="acc-perfil" class="accordion-content">
+                            
+                            <!-- 1. CAMBIAR NOMBRE -->
+                            <div class="submodulo-title">Cambiar Nombre</div>
+                            <div class="form-group">
+                                <label>Nuevo Nombre de Usuario</label>
+                                <input type="text" id="cfg-nombre-usuario">
+                                <button class="btn-primary" style="margin-top:8px;" onclick="cambiarNombreUsuario()">Actualizar Nombre</button>
+                            </div>
+
+                            <!-- 2. CAMBIAR CONTRASEÑA -->
+                            <div class="submodulo-title">Cambiar Contraseña</div>
+                            <div class="form-group">
+                                <label>Contraseña Actual</label>
+                                <input type="password" id="cfg-pass-actual" placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label>Nueva Contraseña</label>
+                                <input type="password" id="cfg-pass-nueva" placeholder="••••••••">
+                            </div>
+                            <div class="form-group">
+                                <label>Confirmar Nueva Contraseña</label>
+                                <input type="password" id="cfg-pass-confirm" placeholder="••••••••">
+                            </div>
+                            <button class="btn-primary" onclick="cambiarPasswordUsuario()">Actualizar Contraseña</button>
+
+                            <!-- 3. CAMBIAR DÍAS ROSTER -->
+                            <div class="submodulo-title">Cambiar Días Roster</div>
+                            <div class="form-group">
+                                <label>Días Laborados (Guardia)</label>
+                                <input type="number" id="cfg-roster-trabajo" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Días Descanso (Libre)</label>
+                                <input type="number" id="cfg-roster-descanso" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Inicio del Régimen</label>
+                                <input type="date" id="cfg-roster-inicio">
+                            </div>
+                            <button class="btn-primary" onclick="cambiarDiasRoster()">Actualizar Régimen Roster</button>
+
+                        </div>
+                    </div>
+
+                    <!-- APARIENCIA -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion('acc-apariencia')">🎨 TEMA Y APARIENCIA <span>▼</span></button>
+                        <div id="acc-apariencia" class="accordion-content">
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn-primary btn-secondary" onclick="cambiarTema('oscuro')">🌙 Modo Oscuro</button>
+                                <button class="btn-primary btn-secondary" onclick="cambiarTema('claro')">☀️ Modo Claro</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- REPORTES Y CONFIGURACIÓN SALARIAL -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion('acc-reportes')">📊 PLANILLA Y REMUNERACIÓN <span>▼</span></button>
+                        <div id="acc-reportes" class="accordion-content">
+                            
+                            <div class="submodulo-title" style="display:flex; justify-content:space-between; align-items:center;">
+                                <span>Ingresos / Haberes y Descuentos</span>
+                                <span id="badge-remun-status" class="status-badge no">Pendiente</span>
+                            </div>
+
+                            <!-- RESUMEN COMPACTO DE DATOS GRABADOS -->
+                            <div id="box-remun-resumen" class="resumen-salario-box" style="display:none;">
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Sueldo Básico:</span>
+                                    <span class="val" id="res-sueldo">S/. 0.00</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Asig. Familiar:</span>
+                                    <span class="val" id="res-asig-fam">No aplica</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Horas Extras:</span>
+                                    <span class="val" id="res-he">S/. 0.00</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Otros Ingresos:</span>
+                                    <span class="val" id="res-otros-ing">S/. 0.00</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Factor Feriado:</span>
+                                    <span class="val" id="res-feriado-factor">1.0x</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Pensiones / Régimen:</span>
+                                    <span class="val" id="res-pension">ONP (13%)</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Renta 5ta Categoría:</span>
+                                    <span class="val" style="color:var(--verde-limon);">Cálculo Oficial SUNAT</span>
+                                </div>
+                                <div class="resumen-salario-item">
+                                    <span class="lbl">Otros Descuentos:</span>
+                                    <span class="val" id="res-otros-desc">S/. 0.00</span>
+                                </div>
+                                <button class="btn-primary btn-secondary" style="margin-top:12px;" onclick="habilitarEdicionRemuneracion()">✏️ Modificar Datos</button>
+                            </div>
+
+                            <!-- FORMULARIO DE INGRESO / EDICION -->
+                            <div id="box-remun-form">
+                                <div class="form-group">
+                                    <label>Sueldo Básico (S/.)</label>
+                                    <input type="number" id="rem-sueldo" placeholder="Ej. 1500.00" step="0.01">
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="rem-asig-fam" onchange="toggleAsigFamInput()">
+                                        <label for="rem-asig-fam">Aplica Asignación Familiar</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="group-asig-fam-monto" style="display:none;">
+                                    <label>Monto Asignación Familiar (S/.)</label>
+                                    <input type="number" id="rem-asig-fam-monto" value="113.00" step="0.50">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Horas Extras - Modo de Ingreso</label>
+                                    <select id="rem-he-tipo" onchange="toggleHEInputs()">
+                                        <option value="fijo">Monto Fijo Directo (S/.)</option>
+                                        <option value="variable">Por Horas Trabajadas</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" id="group-he-fijo">
+                                    <label>Monto Fijo Horas Extras (S/.)</label>
+                                    <input type="number" id="rem-he-monto" value="0.00" step="0.01">
+                                </div>
+
+                                <div class="form-group" id="group-he-var" style="display:none;">
+                                    <label>Horas extra con sobretasa de 25%</label>
+                                    <input type="number" id="rem-he-cant" value="0" min="0" step="0.5">
+                                    <small class="text-muted">Primeras dos horas de sobretiempo por jornada.</small>
+                                    <label style="margin-top:10px">Horas extra con sobretasa de 35%</label>
+                                    <input type="number" id="rem-he-cant-35" value="0" min="0" step="0.5">
+                                    <small class="text-muted">Horas posteriores a las dos primeras de cada jornada.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Otros Ingresos libres / Bonos (S/.)</label>
+                                    <input type="number" id="rem-otros-ingresos" value="0.00" step="0.01" placeholder="0.00">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Factor Adicional Trabajo en Feriado</label>
+                                    <select id="rem-feriado-factor">
+                                        <option value="1" selected>1.0x (Sobretasa del 100% por Ley)</option>
+                                        <option value="2">2.0x (Adicional Doble)</option>
+                                        <option value="3">3.0x (Pago Triple)</option>
+                                    </select>
+                                </div>
+
+                                <div class="submodulo-title">Sistema de Pensiones y Descuentos</div>
+
+                                <div class="form-group">
+                                    <label>Régimen Pensionario</label>
+                                    <select id="rem-tipo-pension" onchange="actualizarComisionPension()">
+                                        <option value="ONP">ONP - Oficina de Normalización Previsional (13.00%)</option>
+                                        <option value="HABITAT_MIXTA">AFP Habitat - comisión sobre saldo (11.37%)</option>
+                                        <option value="INTEGRA_MIXTA">AFP Integra - comisión sobre saldo (11.37%)</option>
+                                        <option value="PRIMA_MIXTA">AFP Prima - comisión sobre saldo (11.37%)</option>
+                                        <option value="PROFUTURO_MIXTA">AFP Profuturo - comisión sobre saldo (11.37%)</option>
+                                        <option value="HABITAT_FLUJO">AFP Habitat - comisión sobre flujo (12.84%)</option>
+                                        <option value="INTEGRA_FLUJO">AFP Integra - comisión sobre flujo (12.92%)</option>
+                                        <option value="PRIMA_FLUJO">AFP Prima - comisión sobre flujo (12.97%)</option>
+                                        <option value="PROFUTURO_FLUJO">AFP Profuturo - comisión sobre flujo (13.06%)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group" id="group-pension-porcentaje">
+                                    <label>Porcentaje de Descuento Total Pensiones (%)</label>
+                                    <input type="number" id="rem-pension-pct" value="13.00" step="0.01">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Renta 5ta Categoría</label>
+                                    <input type="text" value="Proyección anual, deducción 7 UIT y escala progresiva SUNAT" disabled style="opacity:0.7;">
+                                </div>
+                                <div class="form-group">
+                                    <label>Retenciones de quinta acumuladas antes del mes (S/.)</label>
+                                    <input type="number" id="rem-renta-retenciones-previas" value="0.00" min="0" step="0.01">
+                                    <small class="text-muted">Necesario para calcular correctamente abril–diciembre.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Otros Descuentos Libres (S/.)</label>
+                                    <input type="number" id="rem-otros-descuentos" value="0.00" step="0.01" placeholder="0.00">
+                                </div>
+
+                                <button class="btn-primary" style="background:var(--verde-limon); color:#000; font-weight:800; margin-bottom:16px;" onclick="guardarConfiguracionRemuneracion()">💾 Guardar Configuración Salarial</button>
+                            </div>
+
+                            <div class="submodulo-title">Descargar Reportes y Boleta</div>
+
+                            <div class="form-group">
+                                <label>Año de Liquidación</label>
+                                <select id="rpt-anio" onchange="actualizarValoresAño()">
+                                    <option value="">-- Seleccionar Año --</option>
+                                    <option value="2024">2024 (UIT: S/ 5,150)</option>
+                                    <option value="2025">2025 (UIT: S/ 5,350)</option>
+                                    <option value="2026" selected>2026 (UIT: S/ 5,500)</option>
+                                    <option value="2027" disabled>2027 (pendiente de valor oficial)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Mes de Liquidación</label>
+                                <select id="rpt-mes">
+                                    <option value="">-- Seleccionar Mes --</option>
+                                    <option value="0">Enero</option><option value="1">Febrero</option>
+                                    <option value="2">Marzo</option><option value="3">Abril</option>
+                                    <option value="4">Mayo</option><option value="5">Junio</option>
+                                    <option value="6">Julio</option><option value="7">Agosto</option>
+                                    <option value="8">Septiembre</option><option value="9">Octubre</option>
+                                    <option value="10">Noviembre</option><option value="11">Diciembre</option>
+                                </select>
+                            </div>
+
+                            <button class="btn-primary" onclick="descargarAmbosReportes()">📥 Descargar Roster y Boleta (2 Archivos)</button>
+
+                        </div>
+                    </div>
+
+                    <!-- SOPORTE -->
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion('acc-soporte')">🎧 AYUDA Y SOPORTE <span>▼</span></button>
+                        <div id="acc-soporte" class="accordion-content">
+                            <button class="btn-primary btn-secondary" style="margin-bottom:8px;" onclick="window.open('https://youtube.com/@amancioalvaro?si=_erHxNf36TpE8jpp', '_blank')">▶️ Tutorial en YouTube</button>
+                            <button class="btn-primary" style="background:#25D366; color:white;" onclick="window.open('https://wa.me/51941040184', '_blank')">💬 Contactar por WhatsApp</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-actions" style="margin-top:20px;">
+                    <button class="btn-primary btn-red-action" onclick="cerrarModalConfiguracion()">Cerrar Ventana</button>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="reg-pass">Contraseña</label>
-                <input type="password" id="reg-pass" placeholder="••••••••">
-            </div>
-            <div class="form-group">
-                <label for="reg-pass-confirm">Confirmar Contraseña</label>
-                <input type="password" id="reg-pass-confirm" placeholder="••••••••">
-            </div>
-            <p id="reg-error" class="error-msg"></p>
-            <button class="btn-primary" onclick="registrarse()">Continuar a Roster</button>
-            <div class="link-toggle">
-                ¿Ya tienes cuenta? <a onclick="mostrarVista('view-login')">Inicia sesión</a>
+        </div>
+
+        <!-- MODAL EDICION DIA -->
+        <div id="modal-dia" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-fecha-titulo">Detalles del Día</h3>
+                    <button class="btn-close-red" onclick="cerrarModal()">✕</button>
+                </div>
+                <div class="form-group">
+                    <label>Estado del Día</label>
+                    <select id="modal-estado-select"></select>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="modal-feriado">
+                        <label for="modal-feriado">🎉 Marcar como Día Feriado</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Comentario / Observación</label>
+                    <textarea id="modal-comentario" rows="3" placeholder="Detalles de la guardia o permuta..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    <button class="btn-primary" onclick="guardarCambioDia()">Guardar Cambios</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- VISTA 3: CONFIGURACIÓN DE ROSTER -->
-    <div id="view-roster-config" class="view-section">
-        <div class="form-header">
-            <div class="icon-badge">⚙️</div>
-            <h2>Configurar Roster</h2>
-            <p>Establece los parámetros de tu turno</p>
-        </div>
-        <div class="form-body">
-            <div class="form-group">
-                <label for="dias-trabajo">Días Trabajados (Guardia)</label>
-                <input type="number" id="dias-trabajo" value="14" min="1">
-            </div>
-            <div class="form-group">
-                <label for="dias-descanso">Días de Descanso (Libre)</label>
-                <input type="number" id="dias-descanso" value="7" min="1">
-            </div>
-            <div class="form-group">
-                <label for="fecha-inicio">Día de Inicio de Trabajo</label>
-                <input type="date" id="fecha-inicio">
-            </div>
-            <p id="config-error" class="error-msg">Por favor completa todos los campos correctamente.</p>
-            <button class="btn-primary" onclick="guardarConfiguracionRoster()">Generar Mi Calendario</button>
-        </div>
-    </div>
+    <!-- SCRIPTS UNIFICADOS DE ACTIVACIÓN Y SISTEMA -->
+    <script>
+        const urlHttp = "https://turso-puente.acreditacionesmmg.workers.dev/";
+        const tursoToken = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODYzOTA3ODQsImlkIjoiMDE5ZmVkMmItOGUwMS03NTBmLWE1OTctMzA5Mzk3NThhZDNiIiwia2lkIjoibGlxd0NQQ1RjVzZLMTJEUWNJMVhVejRCeGZUMWFnT3FDbHZ2Y3RnZ1BqQSIsInJpZCI6IjFjOTgzZGExLWI4MGUtNGE3OS05MjIxLTNhMDc1M2UyYzU0YiJ9.3KWHzJajGz62k_P-mvvBj25I1kwY8ZTJvSUCXUO61sILuwvZTpJoxzdLWr39nZI3DofY2PV_lVGW5BS4QunfAQ";
+        const MS_DIA = 24 * 60 * 60 * 1000;
+        const DURACION_PRUEBA_MS = 30 * MS_DIA;
+        const TOLERANCIA_OFFLINE_MS = 7 * MS_DIA;
+        const CLAVE_INICIO_PRUEBA = 'roster_inicio_prueba_30_dias';
+        const CLAVE_ULTIMO_USO = 'roster_ultimo_uso';
+        const CLAVE_ULTIMA_VALIDACION = 'licencia_ultima_validacion_roster';
 
-    <!-- VISTA 4: CALENDARIO ROSTER PRINCIPAL -->
-    <div id="view-calendario" class="view-section">
-        <div class="header">
-            <h1 id="roster-titulo-regimen">Roster de Trabajo</h1>
-            <p id="roster-nombre-usuario" class="nombre-usuario">Usuario</p>
-        </div>
+        // Flujo: 30 días sin Turso; después, licencia online con tolerancia offline de 7 días.
+        document.addEventListener('DOMContentLoaded', validarLicenciaAlAbrir);
 
-        <div class="content">
-            <!-- Leyenda -->
-            <div class="leyenda">
-                <div class="leyenda-item guardia">
-                    <span class="badge-dot"></span>
-                    <span id="leyenda-guardia-txt">Guardia</span>
-                </div>
-                <div class="leyenda-item libre">
-                    <span class="badge-dot"></span>
-                    <span id="leyenda-libre-txt">Libre</span>
-                </div>
-            </div>
-
-            <!-- Navegador de Meses -->
-            <div class="nav-meses">
-                <button class="btn-nav" onclick="cambiarMes(-1)">&#10094;</button>
-                <span id="mes-titulo">Mes Año</span>
-                <button class="btn-nav" onclick="cambiarMes(1)">&#10095;</button>
-            </div>
-
-            <!-- Cabecera de días -->
-            <div class="dias-semana">
-                <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
-            </div>
-
-            <!-- Rejilla del Calendario -->
-            <div id="calendario" class="calendario-grid"></div>
-
-            <!-- Métricas del Mes -->
-            <div class="resumen-card">
-                <div class="resumen-item guardia">
-                    <span class="label">Guardia efectiva</span>
-                    <span id="cnt-guardia" class="value">0</span>
-                </div>
-                <div class="resumen-item libre">
-                    <span class="label">Días libres reales</span>
-                    <span id="cnt-libre" class="value">0</span>
-                </div>
-            </div>
-
-            <!-- Recuadro de Feriados del Mes -->
-            <div class="resumen-card feriados-card">
-                <div class="resumen-item feriados">
-                    <span class="label">Feriados del Mes</span>
-                    <span id="cnt-feriados-txt" class="value">0 feriados</span>
-                    <div id="lista-dias-feriados" class="lista-dias">Sin feriados registrados</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pie de página con Autor y Botón de Cerrar Sesión abajo -->
-        <div class="footer-creditos">
-            <span>Autor: Amancio Alvaro</span>
-            <button class="btn-logout-bottom" onclick="cerrarSesion()">Cerrar Sesión</button>
-        </div>
-    </div>
-
-</div>
-
-<!-- MODAL PARA REGISTRO/EDICIÓN DE DÍA -->
-<div id="modal-dia" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 id="modal-fecha-titulo">Detalles de Fecha</h3>
-            <button class="btn-close" onclick="cerrarModal()">✕</button>
-        </div>
-        <div class="form-group">
-            <label for="modal-estado-select">Estado del día</label>
-            <select id="modal-estado-select"></select>
-        </div>
-        <div class="form-group">
-            <div class="checkbox-group" onclick="toggleCheckbox('modal-feriado')">
-                <input type="checkbox" id="modal-feriado" onclick="event.stopPropagation()">
-                <label for="modal-feriado">🎉 Marcar como Día Feriado</label>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="modal-comentario">Comentario / Motivo</label>
-            <textarea id="modal-comentario" rows="3" placeholder="Escribe aquí el motivo o recuerdo..."></textarea>
-        </div>
-        <div class="modal-actions">
-            <button class="btn-primary btn-secondary" onclick="cerrarModal()">Cancelar</button>
-            <button class="btn-primary" onclick="guardarCambioDia()">Guardar Cambios</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    let usuarioActual = null;
-    let anioActual = new Date().getFullYear();
-    let mesActual = new Date().getMonth();
-    let fechaSeleccionadaKey = null;
-
-    const nombresMeses = [
-        "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-    ];
-
-    window.addEventListener('DOMContentLoaded', () => {
-        const hoyStr = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha-inicio').value = hoyStr;
-
-        const sesionGuardada = localStorage.getItem('sesion_activa_roster');
-        if (sesionGuardada) {
-            usuarioActual = JSON.parse(sesionGuardada);
-            cargarVistaPrincipal();
-        } else {
-            mostrarVista('view-login');
-        }
-    });
-
-    function mostrarVista(idVista) {
-        document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
-        document.getElementById(idVista).classList.add('active');
-        ocultarErrores();
-    }
-
-    function ocultarErrores() {
-        document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
-    }
-
-    function obtenerUsuarios() {
-        return JSON.parse(localStorage.getItem('app_roster_usuarios') || '{}');
-    }
-
-    function guardarUsuarios(usuarios) {
-        localStorage.setItem('app_roster_usuarios', JSON.stringify(usuarios));
-    }
-
-    function registrarse() {
-        ocultarErrores();
-        const user = document.getElementById('reg-usuario').value.trim();
-        const pass = document.getElementById('reg-pass').value;
-        const passConfirm = document.getElementById('reg-pass-confirm').value;
-        const errEl = document.getElementById('reg-error');
-
-        if (!user || !pass || !passConfirm) {
-            errEl.textContent = 'Por favor completa todos los campos.';
-            errEl.style.display = 'block';
-            return;
+        function valorTurso(celda) {
+            return celda && typeof celda === 'object' && 'value' in celda ? celda.value : celda;
         }
 
-        if (pass !== passConfirm) {
-            errEl.textContent = 'Las contraseñas no coinciden.';
-            errEl.style.display = 'block';
-            return;
+        function limpiarLicenciaLocal() {
+            localStorage.removeItem('licencia_activada_roster');
+            localStorage.removeItem('licencia_email_roster');
+            localStorage.removeItem('licencia_codigo_roster');
+            localStorage.removeItem(CLAVE_ULTIMA_VALIDACION);
         }
 
-        const usuarios = obtenerUsuarios();
-        if (usuarios[user]) {
-            errEl.textContent = 'El usuario ya existe.';
-            errEl.style.display = 'block';
-            return;
-        }
+        async function validarLicenciaAlAbrir() {
+            const ahoraReal = Date.now();
+            const ultimoUso = Number(localStorage.getItem(CLAVE_ULTIMO_USO)) || 0;
+            // Impide ampliar fácilmente los plazos atrasando el reloj del equipo.
+            const ahoraSeguro = Math.max(ahoraReal, ultimoUso);
+            localStorage.setItem(CLAVE_ULTIMO_USO, String(ahoraSeguro));
 
-        usuarioActual = { nombre: user, password: pass, roster: null, novedades: {} };
-        usuarios[user] = usuarioActual;
-        guardarUsuarios(usuarios);
-        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
-
-        mostrarVista('view-roster-config');
-    }
-
-    function iniciarSesion() {
-        ocultarErrores();
-        const user = document.getElementById('login-usuario').value.trim();
-        const pass = document.getElementById('login-pass').value;
-        const errEl = document.getElementById('login-error');
-
-        const usuarios = obtenerUsuarios();
-        if (usuarios[user] && usuarios[user].password === pass) {
-            usuarioActual = usuarios[user];
-            if (!usuarioActual.novedades) usuarioActual.novedades = {};
-            localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
-            cargarVistaPrincipal();
-        } else {
-            errEl.style.display = 'block';
-        }
-    }
-
-    function guardarConfiguracionRoster() {
-        ocultarErrores();
-        const dTrabajo = parseInt(document.getElementById('dias-trabajo').value);
-        const dDescanso = parseInt(document.getElementById('dias-descanso').value);
-        const fInicio = document.getElementById('fecha-inicio').value;
-
-        if (!dTrabajo || !dDescanso || !fInicio) {
-            document.getElementById('config-error').style.display = 'block';
-            return;
-        }
-
-        const partesFecha = fInicio.split('-');
-        const fechaBase = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
-
-        usuarioActual.roster = {
-            diasTrabajo: dTrabajo,
-            diasDescanso: dDescanso,
-            fechaInicio: fechaBase.toISOString()
-        };
-
-        const usuarios = obtenerUsuarios();
-        usuarios[usuarioActual.nombre] = usuarioActual;
-        guardarUsuarios(usuarios);
-        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
-
-        cargarVistaPrincipal();
-    }
-
-    function cargarVistaPrincipal() {
-        if (!usuarioActual.roster) {
-            mostrarVista('view-roster-config');
-            return;
-        }
-
-        mostrarVista('view-calendario');
-        document.getElementById('roster-nombre-usuario').textContent = usuarioActual.nombre;
-        document.getElementById('roster-titulo-regimen').textContent = `Roster (${usuarioActual.roster.diasTrabajo}x${usuarioActual.roster.diasDescanso})`;
-        document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
-        document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
-
-        renderizarCalendario();
-    }
-
-    function cerrarSesion() {
-        localStorage.removeItem('sesion_activa_roster');
-        usuarioActual = null;
-        document.getElementById('login-usuario').value = '';
-        document.getElementById('login-pass').value = '';
-        mostrarVista('view-login');
-    }
-
-    function esDiaDeGuardiaBase(fecha) {
-        const roster = usuarioActual.roster;
-        const fechaBase = new Date(roster.fechaInicio);
-
-        const f1 = new Date(fechaBase.getFullYear(), fechaBase.getMonth(), fechaBase.getDate());
-        const f2 = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
-
-        const diffTiempo = f2 - f1;
-        const diffDias = Math.round(diffTiempo / (1000 * 60 * 60 * 24));
-        
-        const cicloTotal = roster.diasTrabajo + roster.diasDescanso;
-        let diaEnCiclo = diffDias % cicloTotal;
-        if (diaEnCiclo < 0) diaEnCiclo += cicloTotal;
-
-        return diaEnCiclo < roster.diasTrabajo;
-    }
-
-    function renderizarCalendario() {
-        const grid = document.getElementById("calendario");
-        const titulo = document.getElementById("mes-titulo");
-        grid.innerHTML = "";
-
-        titulo.textContent = `${nombresMeses[mesActual]} ${anioActual}`;
-
-        const primerDiaMes = new Date(anioActual, mesActual, 1);
-        const ultimoDiaMes = new Date(anioActual, mesActual + 1, 0);
-
-        let diaInicioSemana = primerDiaMes.getDay() - 1;
-        if (diaInicioSemana === -1) diaInicioSemana = 6;
-
-        for (let i = 0; i < diaInicioSemana; i++) {
-            const emptyCell = document.createElement("div");
-            emptyCell.className = "dia-num empty";
-            grid.appendChild(emptyCell);
-        }
-
-        let cGuardia = 0;
-        let cLibre = 0;
-        let diasFeriadosList = [];
-        const fechaHoy = new Date();
-
-        for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
-            const fecha = new Date(anioActual, mesActual, dia);
-            const celda = document.createElement("div");
-            celda.className = "dia-num";
-            celda.textContent = dia;
-
-            const keyFecha = formatDateKey(fecha);
-            const esGuardia = esDiaDeGuardiaBase(fecha);
-            const novedad = (usuarioActual.novedades || {})[keyFecha];
-
-            if (fecha.toDateString() === fechaHoy.toDateString()) {
-                celda.classList.add("hoy");
+            let inicioPrueba = Number(localStorage.getItem(CLAVE_INICIO_PRUEBA));
+            if (!Number.isFinite(inicioPrueba) || inicioPrueba <= 0) {
+                inicioPrueba = ahoraSeguro;
+                localStorage.setItem(CLAVE_INICIO_PRUEBA, String(inicioPrueba));
             }
 
-            // Aplicar Estados Normales/Excepciones
-            if (novedad) {
-                if (novedad.estado === 'falta_injustificada') {
-                    celda.classList.add("falta-injustificada");
-                    cLibre++;
-                } else if (novedad.estado === 'falta_justificada') {
-                    celda.classList.add("falta-justificada");
-                } else if (novedad.estado === 'trabajado_extra') {
-                    celda.classList.add("trabajado-extra");
-                    cGuardia++;
+            const transcurridoPrueba = Math.max(0, ahoraSeguro - inicioPrueba);
+            if (transcurridoPrueba < DURACION_PRUEBA_MS) {
+                const diasRestantes = Math.max(1, Math.ceil((DURACION_PRUEBA_MS - transcurridoPrueba) / MS_DIA));
+                localStorage.setItem('roster_estado_acceso', `Prueba gratuita: ${diasRestantes} día(s) restante(s)`);
+                desbloquearAplicativo();
+                return; // Durante la prueba no se realiza ninguna consulta a Turso.
+            }
+
+            const marcadaActiva = localStorage.getItem('licencia_activada_roster') === 'true';
+            const email = (localStorage.getItem('licencia_email_roster') || '').trim().toLowerCase();
+            const codigo = (localStorage.getItem('licencia_codigo_roster') || '').trim();
+            const ultimaValidacion = Number(localStorage.getItem(CLAVE_ULTIMA_VALIDACION)) || 0;
+
+            if (!marcadaActiva || !email || !codigo) {
+                limpiarLicenciaLocal();
+                document.getElementById('resultadoActivacion').innerHTML = '<span class="text-danger fw-bold">Finalizó el periodo gratuito de 30 días. Para continuar debes pagar y activar una licencia.</span>';
+                return;
+            }
+
+            const consulta = {
+                requests: [{
+                    type: 'execute',
+                    stmt: {
+                        sql: `SELECT estado, dispositivos_conectados FROM licencias
+                              WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+                                AND TRIM(codigo_activacion) = TRIM(?)
+                                AND LOWER(TRIM(nombre_aplicativo)) = LOWER('Aplicativo Roster Laboral')
+                              LIMIT 1;`,
+                        args: [{ type: 'text', value: email }, { type: 'text', value: codigo }]
+                    }
+                }, { type: 'close' }]
+            };
+
+            const controlador = new AbortController();
+            const limiteEspera = setTimeout(() => controlador.abort(), 8000);
+            try {
+                const respuesta = await fetch(urlHttp, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${tursoToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(consulta),
+                    signal: controlador.signal
+                });
+                const data = await respuesta.json();
+                const resObj = data.results?.[0]?.response;
+                const fila = resObj?.result?.rows?.[0];
+                const estado = String(valorTurso(fila?.[0]) || '').trim().toLowerCase();
+                const dispositivos = Number(valorTurso(fila?.[1]) ?? 0);
+
+                if (respuesta.ok && !resObj?.error && fila && estado === 'activo' && dispositivos >= 1) {
+                    localStorage.setItem(CLAVE_ULTIMA_VALIDACION, String(ahoraSeguro));
+                    localStorage.setItem('roster_estado_acceso', 'Licencia verificada en línea');
+                    desbloquearAplicativo();
                 } else {
-                    aplicarEstadoNormal(celda, esGuardia);
+                    limpiarLicenciaLocal();
+                    document.getElementById('resultadoActivacion').innerHTML = '<span class="text-danger fw-bold">La licencia fue desactivada o ya no es válida. Acceso bloqueado.</span>';
+                }
+            } catch (error) {
+                console.error('No se pudo validar la licencia al abrir:', error);
+                const tiempoSinValidar = ahoraSeguro - ultimaValidacion;
+                if (ultimaValidacion > 0 && tiempoSinValidar <= TOLERANCIA_OFFLINE_MS) {
+                    const diasOffline = Math.max(1, Math.ceil((TOLERANCIA_OFFLINE_MS - tiempoSinValidar) / MS_DIA));
+                    localStorage.setItem('roster_estado_acceso', `Modo sin conexión: ${diasOffline} día(s) disponible(s)`);
+                    desbloquearAplicativo();
+                } else {
+                    document.getElementById('resultadoActivacion').innerHTML = '<span class="text-danger fw-bold">Debes conectarte a internet para verificar tu licencia. No necesitas pagar nuevamente.</span>';
+                }
+            } finally {
+                clearTimeout(limiteEspera);
+            }
+        }
+
+        function bloquearFormularioSolicitud(correoGuardado) {
+            const form = document.getElementById('formSolicitud');
+            const inputs = form.querySelectorAll('input, select, button');
+            inputs.forEach(el => el.disabled = true);
+            
+            const resultadoDiv = document.getElementById('resultadoSolicitud');
+            resultadoDiv.innerHTML = `<span class="text-success fw-bold"><i class="fas.fa-check-circle"></i> Ya enviaste una solicitud con el correo: <u>${correoGuardado}</u>. Espera que el administrador te asigne el código.</span>`;
+        }
+
+        // 1. Función para enviar la solicitud de registro tras el pago (Con validación de duplicados por correo y aplicativo)
+        async function enviarSolicitud(event) {
+            event.preventDefault();
+            const formulario = event.currentTarget;
+            const email = document.getElementById('emailSolicitud').value.trim().toLowerCase();
+            const aplicativo = document.getElementById('nombreAplicativo').value.trim();
+            const resultadoDiv = document.getElementById('resultadoSolicitud');
+            const botonEnviar = formulario.querySelector('button[type="submit"], button:not([type])');
+
+            if (!email || !aplicativo) {
+                resultadoDiv.innerHTML = '<span class="text-danger">Completa el correo y el nombre del aplicativo.</span>';
+                return;
+            }
+
+            // INSERT condicional atómico: compara correo + aplicativo sin distinguir
+            // mayúsculas/minúsculas ni espacios accidentales.
+            const bodyDataInsert = {
+                requests: [
+                    {
+                        type: "execute",
+                        stmt: {
+                            sql: `INSERT INTO licencias
+                                  (email, codigo_activacion, estado, dispositivos_conectados, nombre_aplicativo)
+                                  SELECT ?, 'PENDIENTE', 'pendiente', 0, ?
+                                  WHERE NOT EXISTS (
+                                      SELECT 1 FROM licencias
+                                      WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+                                        AND LOWER(TRIM(nombre_aplicativo)) = LOWER(TRIM(?))
+                                  );`,
+                            args: [
+                                { type: "text", value: email },
+                                { type: "text", value: aplicativo },
+                                { type: "text", value: email },
+                                { type: "text", value: aplicativo }
+                            ]
+                        }
+                    },
+                    { type: "close" }
+                ]
+            };
+
+            try {
+                if (botonEnviar) botonEnviar.disabled = true;
+                resultadoDiv.innerHTML = '<span class="text-info">Verificando y enviando solicitud...</span>';
+
+                const responseInsert = await fetch(urlHttp, {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": `Bearer ${tursoToken}`, 
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify(bodyDataInsert)
+                });
+
+                const rawText = await responseInsert.text();
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    console.error("Respuesta no válida del servidor:", rawText);
+                    resultadoDiv.innerHTML = `<span class="text-danger">Error: El servidor no devolvió un JSON válido.</span>`;
+                    return;
+                }
+
+                const resObj = data.results && data.results[0] ? data.results[0].response : null;
+                const filasInsertadas = Number(resObj?.result?.affected_row_count ?? 0);
+
+                if (responseInsert.ok && resObj && !resObj.error && filasInsertadas === 1) {
+                    resultadoDiv.innerHTML = '<span class="text-success fw-bold">✅ Solicitud enviada correctamente. Espera que el administrador te asigne el código.</span>';
+                    formulario.reset();
+                } else if (responseInsert.ok && resObj && !resObj.error && filasInsertadas === 0) {
+                    resultadoDiv.innerHTML = '<span class="text-danger">⚠️ Ya existe un registro con este correo y este aplicativo. No se creó otro.</span>';
+                } else {
+                    console.error("Respuesta completa de Turso:", data);
+                    resultadoDiv.innerHTML = `<span class="text-danger">Error de Base de Datos: ${resObj?.error?.message || JSON.stringify(data)}</span>`;
+                }
+            } catch (error) {
+                console.error(error);
+                resultadoDiv.innerHTML = `<span class="text-danger">Error de red: ${error.message}</span>`;
+            } finally {
+                if (botonEnviar) botonEnviar.disabled = false;
+            }
+        }
+
+        // 2. Función para verificar el código, validar dispositivos y conceder acceso
+        async function verificarLicencia() {
+            const email = document.getElementById('emailCliente').value.trim().toLowerCase();
+            const codigo = document.getElementById('codigoLicencia').value.trim();
+            const resultadoDiv = document.getElementById('resultadoActivacion');
+
+            if (!email || !codigo) {
+                resultadoDiv.innerHTML = '<span class="text-danger">Por favor completa ambos campos.</span>';
+                return;
+            }
+
+            resultadoDiv.innerHTML = '<span class="text-info">Verificando y activando...</span>';
+
+            // La condición dispositivos_conectados = 0 hace que solamente el primer
+            // dispositivo pueda activar esta combinación de correo y código.
+            const bodyDataActivacion = {
+                requests: [
+                    {
+                        type: "execute",
+                        stmt: {
+                            sql: `UPDATE licencias
+                                  SET estado = 'activo', dispositivos_conectados = 1
+                                  WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+                                    AND TRIM(codigo_activacion) = TRIM(?)
+                                    AND UPPER(TRIM(codigo_activacion)) <> 'PENDIENTE'
+                                    AND dispositivos_conectados = 0;`,
+                            args: [
+                                { type: "text", value: email },
+                                { type: "text", value: codigo }
+                            ]
+                        }
+                    },
+                    {
+                        type: "execute",
+                        stmt: {
+                            sql: `SELECT dispositivos_conectados
+                                  FROM licencias
+                                  WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+                                    AND TRIM(codigo_activacion) = TRIM(?)
+                                    AND UPPER(TRIM(codigo_activacion)) <> 'PENDIENTE'
+                                  LIMIT 1;`,
+                            args: [
+                                { type: "text", value: email },
+                                { type: "text", value: codigo }
+                            ]
+                        }
+                    },
+                    { type: "close" }
+                ]
+            };
+
+            try {
+                const response = await fetch(urlHttp, {
+                    method: "POST",
+                    headers: { 
+                        "Authorization": `Bearer ${tursoToken}`, 
+                        "Content-Type": "application/json" 
+                    },
+                    body: JSON.stringify(bodyDataActivacion)
+                });
+
+                const data = await response.json();
+                const updateRes = data.results?.[0]?.response;
+                const selectRes = data.results?.[1]?.response;
+                const filasActualizadas = Number(updateRes?.result?.affected_row_count ?? 0);
+                const filasEncontradas = selectRes?.result?.rows || [];
+
+                if (!response.ok || updateRes?.error || selectRes?.error) {
+                    throw new Error(updateRes?.error?.message || selectRes?.error?.message || 'Respuesta inválida de Turso');
+                }
+
+                if (filasActualizadas === 1) {
+                    // Solo se guardan las credenciales locales después de que Turso
+                    // confirma que este dispositivo cambió el contador de 0 a 1.
+                    localStorage.setItem('licencia_activada_roster', 'true');
+                    localStorage.setItem('licencia_email_roster', email);
+                    localStorage.setItem('licencia_codigo_roster', codigo);
+                    localStorage.setItem(CLAVE_ULTIMA_VALIDACION, String(Date.now()));
+                    localStorage.setItem('roster_estado_acceso', 'Licencia activada y verificada');
+
+                    resultadoDiv.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-check-circle"></i> ¡Licencia válida y activada! Dispositivo registrado y acceso concedido.</span>';
+                    setTimeout(desbloquearAplicativo, 1000);
+                } else if (filasEncontradas.length > 0) {
+                    resultadoDiv.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Este código ya está activado en otro dispositivo. Acceso denegado.</span>';
+                } else {
+                    resultadoDiv.innerHTML = '<span class="text-danger">Código incorrecto, correo no registrado o la licencia aún está pendiente.</span>';
+                }
+            } catch (error) {
+                console.error(error);
+                resultadoDiv.innerHTML = '<span class="text-danger">Error al conectar o actualizar la base de datos.</span>';
+            }
+        }
+
+        // Transición de vista activadora a la vista del sistema
+        function desbloquearAplicativo() {
+            document.getElementById('section-activador').style.display = 'none';
+            document.getElementById('section-roster').style.display = 'block';
+            
+            const body = document.getElementById('body-main');
+            body.classList.remove('activador-body');
+            body.classList.add('roster-body');
+
+            inicializarSistemaRoster();
+        }
+
+
+        /* LOGICA DEL SISTEMA ROSTER */
+        let usuarioActual = null;
+        let anioActual = new Date().getFullYear();
+        let mesActual = new Date().getMonth();
+        let fechaSeleccionadaKey = null;
+
+        const PARAMETROS_PERU = {
+            2024: { uit: 5150, asigFam: 102.50 },
+            2025: { uit: 5350, asigFam: 102.50 },
+            2026: { uit: 5500, asigFam: 113.00 }
+        };
+
+        const TENSION_TASAS = {
+            ONP: 13.00,
+            HABITAT_MIXTA: 11.37,
+            INTEGRA_MIXTA: 11.37,
+            PRIMA_MIXTA: 11.37,
+            PROFUTURO_MIXTA: 11.37,
+            HABITAT_FLUJO: 12.84,
+            INTEGRA_FLUJO: 12.92,
+            PRIMA_FLUJO: 12.97,
+            PROFUTURO_FLUJO: 13.06
+        };
+
+        const nombresMeses = [
+            "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ];
+
+        function inicializarSistemaRoster() {
+            const hoyStr = new Date().toISOString().split('T')[0];
+            const elemFechaInicio = document.getElementById('fecha-inicio');
+            if (elemFechaInicio) elemFechaInicio.value = hoyStr;
+
+            const sesionGuardada = localStorage.getItem('sesion_activa_roster');
+            if (sesionGuardada) {
+                usuarioActual = JSON.parse(sesionGuardada);
+                cargarVistaPrincipal();
+            } else {
+                mostrarVista('view-login');
+            }
+        }
+
+        function mostrarVista(idVista) {
+            document.querySelectorAll('.view-section').forEach(view => view.classList.remove('active'));
+            document.getElementById(idVista).classList.add('active');
+            document.querySelectorAll('.error-msg').forEach(el => el.style.display = 'none');
+        }
+
+        function obtenerUsuarios() {
+            return JSON.parse(localStorage.getItem('app_roster_usuarios') || '{}');
+        }
+
+        function guardarUsuarios(usuarios) {
+            localStorage.setItem('app_roster_usuarios', JSON.stringify(usuarios));
+        }
+
+        function actualizarSesionLocal() {
+            localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+            const usuarios = obtenerUsuarios();
+            usuarios[usuarioActual.nombre] = usuarioActual;
+            guardarUsuarios(usuarios);
+        }
+
+        function registrarse() {
+            const user = document.getElementById('reg-usuario').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const passConfirm = document.getElementById('reg-pass-confirm').value;
+            const errEl = document.getElementById('reg-error');
+
+            if (!user || !pass || pass !== passConfirm) {
+                errEl.textContent = 'Datos inválidos o contraseñas no coinciden.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            const usuarios = obtenerUsuarios();
+            if (usuarios[user]) {
+                errEl.textContent = 'El usuario ya existe.';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            usuarioActual = { nombre: user, password: pass, roster: null, novedades: {}, remuneracion: null };
+            actualizarSesionLocal();
+            mostrarVista('view-roster-config');
+        }
+
+        function iniciarSesion() {
+            const user = document.getElementById('login-usuario').value.trim();
+            const pass = document.getElementById('login-pass').value;
+            const errEl = document.getElementById('login-error');
+
+            const usuarios = obtenerUsuarios();
+            if (usuarios[user] && usuarios[user].password === pass) {
+                usuarioActual = usuarios[user];
+                if (!usuarioActual.novedades) usuarioActual.novedades = {};
+                actualizarSesionLocal();
+                cargarVistaPrincipal();
+            } else {
+                errEl.style.display = 'block';
+            }
+        }
+
+        function guardarConfiguracionRoster() {
+            const dTrabajo = parseInt(document.getElementById('dias-trabajo').value);
+            const dDescanso = parseInt(document.getElementById('dias-descanso').value);
+            const fInicio = document.getElementById('fecha-inicio').value;
+
+            if (!dTrabajo || !dDescanso || !fInicio) return;
+
+            const partesFecha = fInicio.split('-');
+            const fechaBase = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+
+            usuarioActual.roster = {
+                diasTrabajo: dTrabajo,
+                diasDescanso: dDescanso,
+                fechaInicio: fechaBase.toISOString()
+            };
+
+            actualizarSesionLocal();
+            cargarVistaPrincipal();
+        }
+
+        function cargarVistaPrincipal() {
+            if (!usuarioActual.roster) {
+                mostrarVista('view-roster-config');
+                return;
+            }
+
+            mostrarVista('view-calendario');
+            document.getElementById('roster-nombre-usuario').textContent = usuarioActual.nombre;
+            document.getElementById('roster-estado-acceso').textContent = localStorage.getItem('roster_estado_acceso') || 'Acceso local';
+            document.getElementById('roster-titulo-regimen').textContent = `Roster (${usuarioActual.roster.diasTrabajo}x${usuarioActual.roster.diasDescanso})`;
+            document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
+            document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
+
+            renderizarCalendario();
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('sesion_activa_roster');
+            usuarioActual = null;
+            mostrarVista('view-login');
+        }
+
+        function esDiaDeGuardiaBase(fecha) {
+            const roster = usuarioActual.roster;
+            const fechaBase = new Date(roster.fechaInicio);
+            const f1 = new Date(fechaBase.getFullYear(), fechaBase.getMonth(), fechaBase.getDate());
+            const f2 = new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+            const diffDias = Math.round((f2 - f1) / (1000 * 60 * 60 * 24));
+            const cicloTotal = roster.diasTrabajo + roster.diasDescanso;
+            let diaEnCiclo = diffDias % cicloTotal;
+            if (diaEnCiclo < 0) diaEnCiclo += cicloTotal;
+            return diaEnCiclo < roster.diasTrabajo;
+        }
+
+        function formatDateKey(fecha) {
+            const y = fecha.getFullYear();
+            const m = String(fecha.getMonth() + 1).padStart(2, '0');
+            const d = String(fecha.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function renderizarCalendario() {
+            const grid = document.getElementById("calendario");
+            const titulo = document.getElementById("mes-titulo");
+            grid.innerHTML = "";
+            titulo.textContent = `${nombresMeses[mesActual]} ${anioActual}`;
+
+            const primerDiaMes = new Date(anioActual, mesActual, 1);
+            const ultimoDiaMes = new Date(anioActual, mesActual + 1, 0);
+
+            let diaInicioSemana = primerDiaMes.getDay() - 1;
+            if (diaInicioSemana === -1) diaInicioSemana = 6;
+
+            for (let i = 0; i < diaInicioSemana; i++) {
+                const emptyCell = document.createElement("div");
+                emptyCell.className = "dia-num empty";
+                grid.appendChild(emptyCell);
+            }
+
+            let cGuardia = 0, cLibre = 0;
+            let diasFeriadosList = [];
+            const fechaHoy = new Date();
+
+            for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
+                const fecha = new Date(anioActual, mesActual, dia);
+                const celda = document.createElement("div");
+                celda.className = "dia-num";
+                celda.textContent = dia;
+
+                const keyFecha = formatDateKey(fecha);
+                const esGuardia = esDiaDeGuardiaBase(fecha);
+                const novedad = (usuarioActual.novedades || {})[keyFecha];
+
+                if (fecha.toDateString() === fechaHoy.toDateString()) celda.classList.add("hoy");
+
+                if (novedad) {
+                    if (novedad.estado === 'falta_injustificada') { celda.classList.add("falta-injustificada"); cLibre++; }
+                    else if (novedad.estado === 'falta_justificada') { celda.classList.add("falta-justificada"); }
+                    else if (novedad.estado === 'trabajado_extra') { celda.classList.add("trabajado-extra"); cGuardia++; }
+                    else {
+                        celda.classList.add(esGuardia ? "guardia" : "libre");
+                        if (esGuardia) cGuardia++; else cLibre++;
+                    }
+
+                    if (novedad.esFeriado) {
+                        diasFeriadosList.push(dia);
+                        const icon = document.createElement("span");
+                        icon.className = "badge-feriado";
+                        icon.textContent = "🎉";
+                        celda.appendChild(icon);
+                    }
+                    if (novedad.comentario) {
+                        const dot = document.createElement("span");
+                        dot.className = "dot-nota";
+                        celda.appendChild(dot);
+                    }
+                } else {
+                    celda.classList.add(esGuardia ? "guardia" : "libre");
                     if (esGuardia) cGuardia++; else cLibre++;
                 }
 
-                // Si es Feriado
-                if (novedad.esFeriado) {
-                    diasFeriadosList.push(dia);
-                    const feriadoIcon = document.createElement("span");
-                    feriadoIcon.className = "badge-feriado";
-                    feriadoIcon.textContent = "🎉";
-                    celda.appendChild(feriadoIcon);
-                }
-
-                if (novedad.comentario) {
-                    const dot = document.createElement("span");
-                    dot.className = "dot-nota";
-                    celda.appendChild(dot);
-                }
-            } else {
-                aplicarEstadoNormal(celda, esGuardia);
-                if (esGuardia) cGuardia++; else cLibre++;
+                celda.onclick = () => abrirModalDia(fecha, keyFecha, esGuardia, novedad);
+                grid.appendChild(celda);
             }
 
-            celda.onclick = () => abrirModalDia(fecha, esGuardia);
-            grid.appendChild(celda);
+            document.getElementById("cnt-guardia").textContent = `${cGuardia} días`;
+            document.getElementById("cnt-libre").textContent = `${cLibre} días`;
+
+            const totalDistribucion = cGuardia + cLibre;
+            const pctGuardia = totalDistribucion ? Math.round((cGuardia / totalDistribucion) * 100) : 0;
+            document.getElementById('barra-guardia').style.width = `${pctGuardia}%`;
+            document.getElementById('barra-libre').style.width = `${100 - pctGuardia}%`;
+            document.getElementById('distribucion-pct').textContent = `${pctGuardia}% guardia · ${100 - pctGuardia}% libre`;
+
+            const feriadosCount = diasFeriadosList.length;
+            document.getElementById("cnt-feriados-txt").textContent = `${feriadosCount} feriado(s)`;
+            document.getElementById("dias-feriados-txt").textContent = feriadosCount > 0 
+                ? `Días: ${diasFeriadosList.join(', ')}` 
+                : 'Días: Ninguno';
         }
 
-        document.getElementById("cnt-guardia").textContent = `${cGuardia} días`;
-        document.getElementById("cnt-libre").textContent = `${cLibre} días`;
-
-        // Métricas de feriados
-        document.getElementById("cnt-feriados-txt").textContent = `${diasFeriadosList.length} feriado(s)`;
-        if (diasFeriadosList.length > 0) {
-            document.getElementById("lista-dias-feriados").textContent = `Días: ${diasFeriadosList.join(', ')}`;
-        } else {
-            document.getElementById("lista-dias-feriados").textContent = `Sin feriados marcados en este mes`;
-        }
-    }
-
-    function aplicarEstadoNormal(celda, esGuardia) {
-        if (esGuardia) {
-            celda.classList.add("guardia");
-        } else {
-            celda.classList.add("libre");
-        }
-    }
-
-    function cambiarMes(delta) {
-        mesActual += delta;
-        if (mesActual < 0) {
-            mesActual = 11;
-            anioActual--;
-        } else if (mesActual > 11) {
-            mesActual = 0;
-            anioActual++;
-        }
-        renderizarCalendario();
-    }
-
-    function formatDateKey(date) {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-    }
-
-    function toggleCheckbox(id) {
-        const checkbox = document.getElementById(id);
-        checkbox.checked = !checkbox.checked;
-    }
-
-    /* MODAL DE EDICIÓN */
-    function abrirModalDia(fecha, esGuardia) {
-        fechaSeleccionadaKey = formatDateKey(fecha);
-
-        document.getElementById('modal-fecha-titulo').textContent = `${fecha.getDate()} de ${nombresMeses[fecha.getMonth()]} ${fecha.getFullYear()}`;
-        
-        const selectEstado = document.getElementById('modal-estado-select');
-        selectEstado.innerHTML = '';
-
-        if (esGuardia) {
-            selectEstado.innerHTML = `
-                <option value="normal">🟢 Día de Guardia (Normal)</option>
-                <option value="falta_injustificada">🔴 Falta Injustificada</option>
-                <option value="falta_justificada">🟡 Falta Justificada</option>
-            `;
-        } else {
-            selectEstado.innerHTML = `
-                <option value="normal">🔴 Día Libre (Normal)</option>
-                <option value="trabajado_extra">🔵 Bajada Trabajada (Día Trabajado)</option>
-            `;
+        function cambiarMes(delta) {
+            mesActual += delta;
+            if (mesActual > 11) { mesActual = 0; anioActual++; }
+            else if (mesActual < 0) { mesActual = 11; anioActual--; }
+            renderizarCalendario();
         }
 
-        const novedadExistente = (usuarioActual.novedades || {})[fechaSeleccionadaKey];
-        if (novedadExistente) {
-            selectEstado.value = novedadExistente.estado || 'normal';
-            document.getElementById('modal-feriado').checked = !!novedadExistente.esFeriado;
-            document.getElementById('modal-comentario').value = novedadExistente.comentario || '';
-        } else {
-            selectEstado.value = 'normal';
-            document.getElementById('modal-feriado').checked = false;
-            document.getElementById('modal-comentario').value = '';
+        function abrirModalDia(fecha, keyFecha, esGuardia, novedad) {
+            fechaSeleccionadaKey = keyFecha;
+            document.getElementById("modal-fecha-titulo").textContent = `${fecha.getDate()} de ${nombresMeses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+            
+            const selectEstado = document.getElementById("modal-estado-select");
+            selectEstado.innerHTML = "";
+            selectEstado.options.add(new Option(esGuardia ? "Guardia (Normal)" : "Libre (Descanso)", "normal"));
+            selectEstado.options.add(new Option("Falta Injustificada", "falta_injustificada"));
+            selectEstado.options.add(new Option("Falta Justificada", "falta_justificada"));
+            selectEstado.options.add(new Option("Día Trabajo Extra", "trabajado_extra"));
+
+            if (novedad) {
+                selectEstado.value = novedad.estado || "normal";
+                document.getElementById("modal-feriado").checked = !!novedad.esFeriado;
+                document.getElementById("modal-comentario").value = novedad.comentario || "";
+            } else {
+                selectEstado.value = "normal";
+                document.getElementById("modal-feriado").checked = false;
+                document.getElementById("modal-comentario").value = "";
+            }
+
+            document.getElementById("modal-dia").style.display = "flex";
         }
 
-        document.getElementById('modal-dia').style.display = 'flex';
-    }
+        function cerrarModal() { document.getElementById("modal-dia").style.display = "none"; }
 
-    function cerrarModal() {
-        document.getElementById('modal-dia').style.display = 'none';
-    }
+        function guardarCambioDia() {
+            if (!fechaSeleccionadaKey) return;
 
-    function guardarCambioDia() {
-        const estado = document.getElementById('modal-estado-select').value;
-        const esFeriado = document.getElementById('modal-feriado').checked;
-        const comentario = document.getElementById('modal-comentario').value.trim();
+            const estado = document.getElementById("modal-estado-select").value;
+            const esFeriado = document.getElementById("modal-feriado").checked;
+            const comentario = document.getElementById("modal-comentario").value.trim();
 
-        if (!usuarioActual.novedades) usuarioActual.novedades = {};
+            if (!usuarioActual.novedades) usuarioActual.novedades = {};
 
-        if (estado === 'normal' && !esFeriado && !comentario) {
-            delete usuarioActual.novedades[fechaSeleccionadaKey];
-        } else {
-            usuarioActual.novedades[fechaSeleccionadaKey] = {
-                estado: estado,
-                esFeriado: esFeriado,
-                comentario: comentario
+            if (estado === "normal" && !esFeriado && !comentario) {
+                delete usuarioActual.novedades[fechaSeleccionadaKey];
+            } else {
+                usuarioActual.novedades[fechaSeleccionadaKey] = { estado, esFeriado, comentario };
+            }
+
+            actualizarSesionLocal();
+            cerrarModal();
+            renderizarCalendario();
+        }
+
+        function actualizarComisionPension() {
+            const tipo = document.getElementById('rem-tipo-pension').value;
+            if (TENSION_TASAS[tipo] !== undefined) {
+                document.getElementById('rem-pension-pct').value = TENSION_TASAS[tipo].toFixed(2);
+            }
+        }
+
+        function abrirModalConfiguracion() {
+            document.getElementById('cfg-nombre-usuario').value = usuarioActual.nombre;
+            
+            if (usuarioActual.roster) {
+                document.getElementById('cfg-roster-trabajo').value = usuarioActual.roster.diasTrabajo;
+                document.getElementById('cfg-roster-descanso').value = usuarioActual.roster.diasDescanso;
+                if (usuarioActual.roster.fechaInicio) {
+                    const fIn = new Date(usuarioActual.roster.fechaInicio);
+                    document.getElementById('cfg-roster-inicio').value = fIn.toISOString().split('T')[0];
+                }
+            }
+
+            document.getElementById('cfg-pass-actual').value = '';
+            document.getElementById('cfg-pass-nueva').value = '';
+            document.getElementById('cfg-pass-confirm').value = '';
+
+            const rem = usuarioActual.remuneracion;
+            const badge = document.getElementById('badge-remun-status');
+            if (rem) {
+                badge.textContent = "Configurado";
+                badge.className = "status-badge ok";
+                
+                document.getElementById('rem-sueldo').value = rem.sueldo || '';
+                document.getElementById('rem-asig-fam').checked = !!rem.asigFam;
+                document.getElementById('rem-asig-fam-monto').value = rem.asigFamMonto || 113.00;
+                document.getElementById('rem-he-tipo').value = rem.heTipo || 'fijo';
+                document.getElementById('rem-he-monto').value = rem.heMonto || 0;
+                document.getElementById('rem-he-cant').value = rem.heCant || 0;
+                document.getElementById('rem-he-cant-35').value = rem.heCant35 || 0;
+                document.getElementById('rem-feriado-factor').value = rem.feriadoFactor ?? 1;
+                document.getElementById('rem-otros-ingresos').value = rem.otrosIngresos || 0;
+                document.getElementById('rem-tipo-pension').value = rem.tipoPension || 'ONP';
+                document.getElementById('rem-pension-pct').value = rem.pensionPct || 13;
+                document.getElementById('rem-otros-descuentos').value = rem.otrosDescuentos || 0;
+                document.getElementById('rem-renta-retenciones-previas').value = rem.rentaRetencionesPrevias || 0;
+                
+                toggleHEInputs();
+                toggleAsigFamInput();
+                
+                renderizarResumenRemuneracion();
+                document.getElementById('box-remun-resumen').style.display = 'block';
+                document.getElementById('box-remun-form').style.display = 'none';
+            } else {
+                badge.textContent = "Pendiente";
+                badge.className = "status-badge no";
+                document.getElementById('box-remun-resumen').style.display = 'none';
+                document.getElementById('box-remun-form').style.display = 'block';
+            }
+
+            document.getElementById('modal-configuracion').style.display = 'flex';
+        }
+
+        function renderizarResumenRemuneracion() {
+            const rem = usuarioActual.remuneracion;
+            if (!rem) return;
+
+            document.getElementById('res-sueldo').textContent = `S/. ${parseFloat(rem.sueldo).toFixed(2)}`;
+            document.getElementById('res-asig-fam').textContent = rem.asigFam ? `S/. ${parseFloat(rem.asigFamMonto).toFixed(2)}` : 'No aplica';
+            
+            if (rem.heTipo === 'fijo') {
+                document.getElementById('res-he').textContent = `S/. ${parseFloat(rem.heMonto).toFixed(2)}`;
+            } else {
+                document.getElementById('res-he').textContent = `${rem.heCant || 0} h al 25% · ${rem.heCant35 || 0} h al 35%`;
+            }
+
+            document.getElementById('res-otros-ing').textContent = `S/. ${parseFloat(rem.otrosIngresos).toFixed(2)}`;
+            document.getElementById('res-feriado-factor').textContent = `${rem.feriadoFactor}x`;
+            document.getElementById('res-pension').textContent = `${rem.tipoPension} (${rem.pensionPct}%)`;
+            document.getElementById('res-otros-desc').textContent = `S/. ${parseFloat(rem.otrosDescuentos).toFixed(2)}`;
+        }
+
+        function habilitarEdicionRemuneracion() {
+            document.getElementById('box-remun-resumen').style.display = 'none';
+            document.getElementById('box-remun-form').style.display = 'block';
+        }
+
+        function cerrarModalConfiguracion() { document.getElementById('modal-configuracion').style.display = 'none'; }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            const isOpen = el.classList.contains('open');
+            document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('open'));
+            if (!isOpen) el.classList.add('open');
+        }
+
+        function cambiarNombreUsuario() {
+            const nuevoNombre = document.getElementById('cfg-nombre-usuario').value.trim();
+            if (!nuevoNombre) return;
+            const usuarios = obtenerUsuarios();
+            delete usuarios[usuarioActual.nombre];
+            usuarioActual.nombre = nuevoNombre;
+            usuarios[nuevoNombre] = usuarioActual;
+            guardarUsuarios(usuarios);
+            actualizarSesionLocal();
+            cargarVistaPrincipal();
+            alert('Nombre actualizado.');
+        }
+
+        function cambiarPasswordUsuario() {
+            const passActual = document.getElementById('cfg-pass-actual').value;
+            const passNueva = document.getElementById('cfg-pass-nueva').value;
+            const passConfirm = document.getElementById('cfg-pass-confirm').value;
+
+            if (!passActual || !passNueva || !passConfirm) {
+                alert("⚠️ Por favor completa todos los campos de contraseña.");
+                return;
+            }
+
+            if (passActual !== usuarioActual.password) {
+                alert("❌ La contraseña actual no es correcta.");
+                return;
+            }
+
+            if (passNueva !== passConfirm) {
+                alert("⚠️ La nueva contraseña y la confirmación no coinciden.");
+                return;
+            }
+
+            usuarioActual.password = passNueva;
+            actualizarSesionLocal();
+            alert("✅ Contraseña actualizada correctamente.");
+
+            document.getElementById('cfg-pass-actual').value = '';
+            document.getElementById('cfg-pass-nueva').value = '';
+            document.getElementById('cfg-pass-confirm').value = '';
+        }
+
+        function cambiarDiasRoster() {
+            const dTrabajo = parseInt(document.getElementById('cfg-roster-trabajo').value);
+            const dDescanso = parseInt(document.getElementById('cfg-roster-descanso').value);
+            const fInicio = document.getElementById('cfg-roster-inicio').value;
+
+            if (!dTrabajo || !dDescanso || !fInicio) {
+                alert("⚠️ Por favor ingresa los días laborados, días de descanso y la fecha de inicio.");
+                return;
+            }
+
+            const confirmacion = confirm(`¿Está seguro de modificar el régimen de su Roster a ${dTrabajo}x${dDescanso} desde la fecha ${fInicio}?`);
+            if (!confirmacion) return;
+
+            const partesFecha = fInicio.split('-');
+            const fechaBase = new Date(partesFecha[0], partesFecha[1] - 1, partesFecha[2]);
+
+            usuarioActual.roster = {
+                diasTrabajo: dTrabajo,
+                diasDescanso: dDescanso,
+                fechaInicio: fechaBase.toISOString()
             };
+
+            actualizarSesionLocal();
+            cargarVistaPrincipal();
+            alert("✅ Régimen de Roster actualizado con éxito.");
         }
 
-        const usuarios = obtenerUsuarios();
-        usuarios[usuarioActual.nombre] = usuarioActual;
-        guardarUsuarios(usuarios);
-        localStorage.setItem('sesion_activa_roster', JSON.stringify(usuarioActual));
+        function cambiarTema(modo) {
+            if (modo === 'claro') document.getElementById('body-main').classList.add('light-mode');
+            else document.getElementById('body-main').classList.remove('light-mode');
+        }
 
-        cerrarModal();
-        renderizarCalendario();
-    }
-</script>
+        function toggleHEInputs() {
+            const tipo = document.getElementById('rem-he-tipo').value;
+            document.getElementById('group-he-fijo').style.display = tipo === 'fijo' ? 'block' : 'none';
+            document.getElementById('group-he-var').style.display = tipo === 'variable' ? 'block' : 'none';
+        }
 
+        function toggleAsigFamInput() {
+            const chk = document.getElementById('rem-asig-fam').checked;
+            document.getElementById('group-asig-fam-monto').style.display = chk ? 'block' : 'none';
+        }
+
+        function actualizarValoresAño() {
+            const anioSel = document.getElementById('rpt-anio').value;
+            if (anioSel && PARAMETROS_PERU[anioSel]) {
+                document.getElementById('rem-asig-fam-monto').value = PARAMETROS_PERU[anioSel].asigFam;
+            }
+        }
+
+        function guardarConfiguracionRemuneracion() {
+            const sueldo = parseFloat(document.getElementById('rem-sueldo').value);
+            if (!sueldo || sueldo <= 0) {
+                alert("⚠️ Por favor ingresa un Sueldo Básico válido.");
+                return;
+            }
+
+            usuarioActual.remuneracion = {
+                sueldo: sueldo,
+                asigFam: document.getElementById('rem-asig-fam').checked,
+                asigFamMonto: parseFloat(document.getElementById('rem-asig-fam-monto').value) || 113.00,
+                heTipo: document.getElementById('rem-he-tipo').value,
+                heMonto: parseFloat(document.getElementById('rem-he-monto').value) || 0,
+                heCant: parseFloat(document.getElementById('rem-he-cant').value) || 0,
+                heCant35: parseFloat(document.getElementById('rem-he-cant-35').value) || 0,
+                feriadoFactor: parseFloat(document.getElementById('rem-feriado-factor').value),
+                otrosIngresos: parseFloat(document.getElementById('rem-otros-ingresos').value) || 0,
+                tipoPension: document.getElementById('rem-tipo-pension').value,
+                pensionPct: parseFloat(document.getElementById('rem-pension-pct').value) || 13,
+                otrosDescuentos: parseFloat(document.getElementById('rem-otros-descuentos').value) || 0,
+                rentaRetencionesPrevias: parseFloat(document.getElementById('rem-renta-retenciones-previas').value) || 0
+            };
+
+            actualizarSesionLocal();
+            
+            const badge = document.getElementById('badge-remun-status');
+            badge.textContent = "Configurado";
+            badge.className = "status-badge ok";
+
+            renderizarResumenRemuneracion();
+            document.getElementById('box-remun-form').style.display = 'none';
+            document.getElementById('box-remun-resumen').style.display = 'block';
+
+            alert("✅ Configuración salarial guardada correctamente.");
+        }
+
+        function calcularRentaQuintaCategoriaOficial(remuneracionMensualTotal, basico, asigFam, valorUIT, mesActualIndex, retencionesPrevias = 0) {
+            const remOrdinariaMensual = basico + asigFam;
+            const remuneracionProyectada12Meses = remOrdinariaMensual * 12;
+            const gratificacionesLegales = remOrdinariaMensual * 2;
+            const bonificacionExtraordinaria = gratificacionesLegales * 0.09;
+            const ingresosVariablesMes = Math.max(0, remuneracionMensualTotal - remOrdinariaMensual);
+
+            const rentaBrutaAnual = remuneracionProyectada12Meses + gratificacionesLegales + bonificacionExtraordinaria + ingresosVariablesMes;
+            const deduccion7UIT = 7 * valorUIT;
+            const rentaNetaAnual = rentaBrutaAnual - deduccion7UIT;
+
+            if (rentaNetaAnual <= 0) return 0;
+
+            let impuestoAnual = 0;
+            const limiteTramo1 = 5 * valorUIT;   
+            const limiteTramo2 = 20 * valorUIT;  
+            const limiteTramo3 = 35 * valorUIT;  
+            const limiteTramo4 = 45 * valorUIT;  
+
+            if (rentaNetaAnual <= limiteTramo1) {
+                impuestoAnual = rentaNetaAnual * 0.08;
+            } else if (rentaNetaAnual <= limiteTramo2) {
+                impuestoAnual = (limiteTramo1 * 0.08) + ((rentaNetaAnual - limiteTramo1) * 0.14);
+            } else if (rentaNetaAnual <= limiteTramo3) {
+                impuestoAnual = (limiteTramo1 * 0.08) + ((15 * valorUIT) * 0.14) + ((rentaNetaAnual - limiteTramo2) * 0.17);
+            } else if (rentaNetaAnual <= limiteTramo4) {
+                impuestoAnual = (limiteTramo1 * 0.08) + ((15 * valorUIT) * 0.14) + ((15 * valorUIT) * 0.17) + ((rentaNetaAnual - limiteTramo3) * 0.20);
+            } else {
+                impuestoAnual = (limiteTramo1 * 0.08) + ((15 * valorUIT) * 0.14) + ((15 * valorUIT) * 0.17) + ((10 * valorUIT) * 0.20) + ((rentaNetaAnual - limiteTramo4) * 0.30);
+            }
+
+            let divisorMes = 12;
+            if (mesActualIndex >= 0 && mesActualIndex <= 2) divisorMes = 12;      
+            else if (mesActualIndex === 3) divisorMes = 9;                        
+            else if (mesActualIndex >= 4 && mesActualIndex <= 6) divisorMes = 8;  
+            else if (mesActualIndex === 7) divisorMes = 5;                        
+            else if (mesActualIndex >= 8 && mesActualIndex <= 10) divisorMes = 4; 
+            else if (mesActualIndex === 11) divisorMes = 1;                       
+
+            return Math.max(0, (impuestoAnual - Math.max(0, retencionesPrevias)) / divisorMes);
+        }
+
+        function calcularAportePensionario(baseRemunerativa, tipoPension) {
+            const base = Math.max(0, baseRemunerativa);
+            if (tipoPension === 'ONP') return base * 0.13;
+
+            const primaSeguro = Math.min(base, 12672.65) * 0.0137;
+            const aporteFondo = base * 0.10;
+            const comisionesFlujo = {
+                HABITAT_FLUJO: 0.0147,
+                INTEGRA_FLUJO: 0.0155,
+                PRIMA_FLUJO: 0.0160,
+                PROFUTURO_FLUJO: 0.0169
+            };
+            return aporteFondo + primaSeguro + (base * (comisionesFlujo[tipoPension] || 0));
+        }
+
+        function descargarAmbosReportes() {
+            if (!usuarioActual.remuneracion) {
+                alert("❌ NO PUEDES DESCARGAR EL REPORTE TODAVÍA.\nDebes configurar e ingresar tu Remuneración antes de generar las descargas.");
+                return;
+            }
+
+            const mes = document.getElementById('rpt-mes').value;
+            const anio = document.getElementById('rpt-anio').value;
+
+            if (mes === "" || anio === "") {
+                alert("⚠️ DEBE SELECCIONAR OBLIGATORIAMENTE EL MES Y EL AÑO.");
+                return;
+            }
+
+            const mesInt = parseInt(mes);
+            const anioInt = parseInt(anio);
+            const ultimoDia = new Date(anioInt, mesInt + 1, 0).getDate();
+
+            const uitAnio = (PARAMETROS_PERU[anioInt] ? PARAMETROS_PERU[anioInt].uit : 5500);
+
+            // Excel en configuración regional española reconoce ';' como separador.
+            let csvContent = "sep=;\r\nFECHA;ESTADO ROSTER;FERIADO;COMENTARIO\r\n";
+            let feriadosTrabajadosContador = 0;
+
+            for (let d = 1; d <= ultimoDia; d++) {
+                const fecha = new Date(anioInt, mesInt, d);
+                const key = formatDateKey(fecha);
+                const esG = esDiaDeGuardiaBase(fecha);
+                const nov = (usuarioActual.novedades || {})[key];
+
+                let estado = esG ? "Guardia" : "Libre";
+                let esFer = "No";
+                let com = "";
+
+                if (nov) {
+                    if (nov.estado === 'falta_injustificada') estado = "Falta Injustificada";
+                    if (nov.estado === 'falta_justificada') estado = "Falta Justificada";
+                    if (nov.estado === 'trabajado_extra') estado = "Trabajo Extra";
+                    if (nov.esFeriado) {
+                        esFer = "Sí";
+                        if (estado === "Guardia" || estado === "Trabajo Extra") {
+                            feriadosTrabajadosContador++;
+                        }
+                    }
+                    if (nov.comentario) com = nov.comentario.replace(/,/g, " ");
+                }
+
+                const comentarioCsv = String(com).replace(/"/g, '""');
+                csvContent += `${key};${estado};${esFer};"${comentarioCsv}"\r\n`;
+            }
+
+            const csvExcel = "data:text/csv;charset=utf-8," + encodeURIComponent('\uFEFF' + csvContent);
+            descargarArchivo(csvExcel, `Roster_${nombresMeses[mesInt]}_${anioInt}.csv`);
+
+            const rem = usuarioActual.remuneracion;
+            const basico = rem.sueldo;
+            const asigFam = rem.asigFam ? rem.asigFamMonto : 0.00;
+            
+            let horasExtrasMonto = 0;
+            if (rem.heTipo === 'fijo') {
+                horasExtrasMonto = rem.heMonto;
+            } else {
+                const valorHora = (basico + asigFam) / 240;
+                horasExtrasMonto = ((rem.heCant || 0) * valorHora * 1.25) + ((rem.heCant35 || 0) * valorHora * 1.35);
+            }
+
+            const otrosIngresosMonto = rem.otrosIngresos || 0.00;
+            const sumaBaseIngresos = basico + asigFam + horasExtrasMonto + otrosIngresosMonto;
+            const jornalDiarioGlobal = sumaBaseIngresos / 30;
+
+            const multiplicadorFeriados = feriadosTrabajadosContador * rem.feriadoFactor;
+            const feriadoMonto = jornalDiarioGlobal * multiplicadorFeriados;
+            
+            const totalIngresos = sumaBaseIngresos + feriadoMonto;
+            const pensionMonto = calcularAportePensionario(totalIngresos, rem.tipoPension || 'ONP');
+            const renta5taMonto = calcularRentaQuintaCategoriaOficial(totalIngresos, basico, asigFam, uitAnio, mesInt, rem.rentaRetencionesPrevias || 0);
+            const otrosDescuentosMonto = rem.otrosDescuentos || 0.00;
+
+            const totalDescuentos = pensionMonto + renta5taMonto + otrosDescuentosMonto;
+            const netoAPagar = totalIngresos - totalDescuentos;
+
+            let boletaTxt = `==========================================================\n`;
+            boletaTxt += `               BOLETA DE PAGO SIMPLIFICADA\n`;
+            boletaTxt += `               PERIODO: ${nombresMeses[mesInt].toUpperCase()} ${anioInt}\n`;
+            boletaTxt += `               VALOR UIT (${anioInt}): S/. ${uitAnio.toFixed(2)}\n`;
+            boletaTxt += `==========================================================\n`;
+            boletaTxt += `TRABAJADOR        : ${usuarioActual.nombre}\n`;
+            boletaTxt += `SISTEMA PENSION   : ${rem.tipoPension || 'ONP'} (${rem.pensionPct}%)\n`;
+            boletaTxt += `JORNAL DIARIO BASE: S/. ${jornalDiarioGlobal.toFixed(2)} (Suma Ingresos / 30)\n`;
+            boletaTxt += `FERIADOS LABORADOS: ${feriadosTrabajadosContador} (Factor ${rem.feriadoFactor}x | Mult. Total: ${multiplicadorFeriados}x)\n`;
+            boletaTxt += `----------------------------------------------------------\n`;
+            boletaTxt += `CODIGO  CONCEPTOS                       INGRESOS S/.   DESCUENTOS S/.\n`;
+            boletaTxt += `----------------------------------------------------------\n`;
+            boletaTxt += `0121    REMUNERACIÓN BÁSICA               ${basico.toFixed(2).padStart(10)}\n`;
+            if (asigFam > 0) {
+                boletaTxt += `0201    ASIGNACIÓN FAMILIAR                ${asigFam.toFixed(2).padStart(10)}\n`;
+            }
+            if (horasExtrasMonto > 0) {
+                boletaTxt += `0105    HORAS EXTRAS                      ${horasExtrasMonto.toFixed(2).padStart(10)}\n`;
+            }
+            if (otrosIngresosMonto > 0) {
+                boletaTxt += `0901    OTROS INGRESOS                    ${otrosIngresosMonto.toFixed(2).padStart(10)}\n`;
+            }
+            if (feriadoMonto > 0) {
+                boletaTxt += `0107    TRABAJO EN FERIADO                ${feriadoMonto.toFixed(2).padStart(10)}\n`;
+            }
+            boletaTxt += `----------------------------------------------------------\n`;
+            boletaTxt += `0600    PENSIONES (${rem.tipoPension || 'ONP'})                             ${pensionMonto.toFixed(2).padStart(10)}\n`;
+            if (renta5taMonto > 0) {
+                boletaTxt += `0605    RENTA QUINTA CATEGORÍA                           ${renta5taMonto.toFixed(2).padStart(10)}\n`;
+            }
+            if (otrosDescuentosMonto > 0) {
+                boletaTxt += `0709    OTROS DESCUENTOS                                 ${otrosDescuentosMonto.toFixed(2).padStart(10)}\n`;
+            }
+            boletaTxt += `----------------------------------------------------------\n`;
+            boletaTxt += `TOTAL INGRESOS  : S/. ${totalIngresos.toFixed(2)}\n`;
+            boletaTxt += `TOTAL DESCUENTOS: S/. ${totalDescuentos.toFixed(2)}\n`;
+            boletaTxt += `==========================================================\n`;
+            boletaTxt += `NETO A PAGAR    : S/. ${netoAPagar.toFixed(2)}\n`;
+            boletaTxt += `==========================================================\n`;
+
+            setTimeout(() => {
+                descargarArchivo("data:text/plain;charset=utf-8," + encodeURIComponent(boletaTxt), `Boleta_Pago_${nombresMeses[mesInt]}_${anioInt}.txt`);
+            }, 500);
+        }
+
+        function descargarArchivo(dataUri, fileName) {
+            const link = document.createElement("a");
+            link.setAttribute("href", dataUri);
+            link.setAttribute("download", fileName);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>
