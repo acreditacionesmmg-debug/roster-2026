@@ -2125,9 +2125,16 @@
                 urlExterna.searchParams.set('datos', textoABase64Url(contenido));
 
                 const urlFinal = urlExterna.toString();
-                const destinoIntent = urlFinal.replace(/^https?:\/\//, '');
-                const intentUrl = `intent://${destinoIntent}#Intent;scheme=${urlExterna.protocol.replace(':', '')};package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(urlFinal)};end`;
-                window.location.href = intentUrl;
+                // URL HTTPS estándar: permite abrir Chrome, Samsung Internet u otro
+                // navegador sin enviar al usuario a Play Store/Galaxy Store.
+                const enlaceExterno = document.createElement('a');
+                enlaceExterno.href = urlFinal;
+                enlaceExterno.target = '_blank';
+                enlaceExterno.rel = 'noopener noreferrer external';
+                enlaceExterno.style.display = 'none';
+                document.body.appendChild(enlaceExterno);
+                enlaceExterno.click();
+                document.body.removeChild(enlaceExterno);
             } catch (error) {
                 console.error('No se pudo abrir Chrome:', error);
                 alert('No fue posible abrir el navegador para descargar. Abre el enlace del sistema directamente en Chrome.');
