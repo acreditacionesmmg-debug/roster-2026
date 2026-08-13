@@ -1292,7 +1292,8 @@
             const body = document.getElementById('body-main');
             body.classList.remove('activador-body');
             body.classList.add('roster-body');
-            body.classList.add('light-mode');
+            const temaGuardado = localStorage.getItem('roster_tema_preferido') || 'claro';
+            body.classList.toggle('light-mode', temaGuardado === 'claro');
 
             inicializarSistemaRoster();
         }
@@ -1792,8 +1793,9 @@
         }
 
         function cambiarTema(modo) {
-            if (modo === 'claro') document.getElementById('body-main').classList.add('light-mode');
-            else document.getElementById('body-main').classList.remove('light-mode');
+            const tema = modo === 'oscuro' ? 'oscuro' : 'claro';
+            document.getElementById('body-main').classList.toggle('light-mode', tema === 'claro');
+            localStorage.setItem('roster_tema_preferido', tema);
         }
 
         function toggleHEInputs() {
@@ -1907,7 +1909,7 @@
             return aporteFondo + primaSeguro + (base * (comisionesFlujo[tipoPension] || 0));
         }
 
-        function descargarReporte(tipoReporte) {
+        async function descargarReporte(tipoReporte) {
             if (!['roster', 'boleta'].includes(tipoReporte)) return;
             if (!usuarioActual.remuneracion) {
                 alert("❌ NO PUEDES DESCARGAR EL REPORTE TODAVÍA.\nDebes configurar e ingresar tu Remuneración antes de generar las descargas.");
@@ -1959,9 +1961,8 @@
                 csvContent += `${key};${estado};${esFer};"${comentarioCsv}"\r\n`;
             }
 
-            const csvExcel = "data:text/csv;charset=utf-8," + encodeURIComponent('\uFEFF' + csvContent);
             if (tipoReporte === 'roster') {
-                descargarArchivo(csvExcel, `Roster_${nombresMeses[mesInt]}_${anioInt}.csv`);
+                await guardarOCompartirArchivo('\uFEFF' + csvContent, `Roster_${nombresMeses[mesInt]}_${anioInt}.csv`, 'text/csv;charset=utf-8');
                 return;
             }
 
@@ -2032,16 +2033,40 @@
             boletaTxt += `NETO A PAGAR    : S/. ${netoAPagar.toFixed(2)}\n`;
             boletaTxt += `==========================================================\n`;
 
-            descargarArchivo("data:text/plain;charset=utf-8," + encodeURIComponent('\uFEFF' + boletaTxt), `Boleta_Pago_${nombresMeses[mesInt]}_${anioInt}.txt`);
+            await guardarOCompartirArchivo('\uFEFF' + boletaTxt, `Boleta_Pago_${nombresMeses[mesInt]}_${anioInt}.txt`, 'text/plain;charset=utf-8');
         }
 
-        function descargarArchivo(dataUri, fileName) {
+        async function guardarOCompartirArchivo(contenido, fileName, mimeType) {
+            const archivo = new File([contenido], fileName, { type: mimeType });
+            const esAndroid = /Android/i.test(navigator.userAgent);
+
+            // En la APK evita enviar data: al DownloadManager de WebIntoApp.
+            // El panel nativo permite guardar en Archivos, Drive o compartir.
+            if (esAndroid) {
+                if (navigator.share && (!navigator.canShare || navigator.canShare({ files: [archivo] }))) {
+                    try {
+                        await navigator.share({ title: fileName, files: [archivo] });
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            console.error('Error al compartir el archivo:', error);
+                            alert('No se pudo abrir el panel para guardar. Abre el sistema en Chrome para descargar este archivo.');
+                        }
+                    }
+                    return;
+                }
+
+                alert('Esta versión de la APK no permite guardar archivos generados. Abre el sistema en Chrome y pulsa nuevamente Descargar.');
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(archivo);
             const link = document.createElement("a");
-            link.setAttribute("href", dataUri);
+            link.setAttribute("href", objectUrl);
             link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
         }
     </script>
 </body>
