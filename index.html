@@ -1001,7 +1001,38 @@
         const CLAVE_ULTIMA_VALIDACION = 'licencia_ultima_validacion_roster';
 
         // Flujo: 30 días sin Turso; después, licencia online con tolerancia offline de 7 días.
-        document.addEventListener('DOMContentLoaded', validarLicenciaAlAbrir);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (procesarDescargaExterna()) return;
+            validarLicenciaAlAbrir();
+        });
+
+        function procesarDescargaExterna() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('descarga_externa') !== '1') return false;
+
+            try {
+                const nombre = (params.get('nombre') || 'reporte.txt').replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+                const mimeSolicitado = params.get('mime') || '';
+                const mime = mimeSolicitado.startsWith('text/csv') ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8';
+                const base64SinPadding = (params.get('datos') || '').replace(/-/g, '+').replace(/_/g, '/');
+                const base64 = base64SinPadding.padEnd(Math.ceil(base64SinPadding.length / 4) * 4, '=');
+                const binario = atob(base64);
+                const bytes = Uint8Array.from(binario, caracter => caracter.charCodeAt(0));
+                const objectUrl = URL.createObjectURL(new Blob([bytes], { type: mime }));
+
+                // Elimina inmediatamente los datos del reporte de la barra e historial.
+                history.replaceState({}, document.title, window.location.pathname);
+                document.body.innerHTML = `<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#f1f5f9;font-family:Arial,sans-serif"><section style="max-width:420px;background:white;padding:28px;border-radius:20px;box-shadow:0 20px 50px rgba(15,23,42,.16);text-align:center"><div style="font-size:42px">✅</div><h2 style="color:#0f172a">Reporte preparado</h2><p style="color:#64748b">La descarga comenzará automáticamente. Si no comienza, pulsa el botón.</p><a id="descarga-manual" href="${objectUrl}" download="${nombre}" style="display:block;padding:14px;background:#2563eb;color:white;border-radius:12px;text-decoration:none;font-weight:700">Descargar ${nombre}</a><p style="font-size:12px;color:#94a3b8;margin-top:18px">Después de guardar puedes cerrar esta pestaña y volver a Roster Laboral.</p></section></main>`;
+
+                document.getElementById('descarga-manual').click();
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+            } catch (error) {
+                console.error('No se pudo reconstruir el reporte:', error);
+                history.replaceState({}, document.title, window.location.pathname);
+                document.body.innerHTML = '<p style="padding:24px;font-family:Arial">No se pudo preparar el reporte. Regresa a la aplicación e inténtalo otra vez.</p>';
+            }
+            return true;
+        }
 
         function valorTurso(celda) {
             return celda && typeof celda === 'object' && 'value' in celda ? celda.value : celda;
@@ -2049,13 +2080,13 @@
                     } catch (error) {
                         if (error.name !== 'AbortError') {
                             console.error('Error al compartir el archivo:', error);
-                            alert('No se pudo abrir el panel para guardar. Abre el sistema en Chrome para descargar este archivo.');
+                            abrirDescargaEnChrome(contenido, fileName, mimeType);
                         }
                     }
                     return;
                 }
 
-                alert('Esta versión de la APK no permite guardar archivos generados. Abre el sistema en Chrome y pulsa nuevamente Descargar.');
+                abrirDescargaEnChrome(contenido, fileName, mimeType);
                 return;
             }
 
@@ -2067,6 +2098,40 @@
             link.click();
             document.body.removeChild(link);
             setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+        }
+
+        function textoABase64Url(texto) {
+            const bytes = new TextEncoder().encode(texto);
+            let binario = '';
+            const bloque = 8192;
+            for (let i = 0; i < bytes.length; i += bloque) {
+                binario += String.fromCharCode(...bytes.subarray(i, i + bloque));
+            }
+            return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+        }
+
+        function abrirDescargaEnChrome(contenido, fileName, mimeType) {
+            try {
+                const urlExterna = new URL(window.location.href);
+                if (urlExterna.protocol !== 'https:' && urlExterna.protocol !== 'http:') {
+                    throw new Error('La aplicación no está cargada desde una URL pública');
+                }
+
+                urlExterna.search = '';
+                urlExterna.hash = '';
+                urlExterna.searchParams.set('descarga_externa', '1');
+                urlExterna.searchParams.set('nombre', fileName);
+                urlExterna.searchParams.set('mime', mimeType);
+                urlExterna.searchParams.set('datos', textoABase64Url(contenido));
+
+                const urlFinal = urlExterna.toString();
+                const destinoIntent = urlFinal.replace(/^https?:\/\//, '');
+                const intentUrl = `intent://${destinoIntent}#Intent;scheme=${urlExterna.protocol.replace(':', '')};package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(urlFinal)};end`;
+                window.location.href = intentUrl;
+            } catch (error) {
+                console.error('No se pudo abrir Chrome:', error);
+                alert('No fue posible abrir el navegador para descargar. Abre el enlace del sistema directamente en Chrome.');
+            }
         }
     </script>
 </body>
