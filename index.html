@@ -406,6 +406,30 @@
         .distribucion-bar { height:10px; display:flex; overflow:hidden; border-radius:999px; background:var(--surface-card); }
         .distribucion-bar .trabajo { background:linear-gradient(90deg,#059669,#34d399); transition:width .35s ease; }
         .distribucion-bar .descanso { background:linear-gradient(90deg,#e11d48,#fb7185); transition:width .35s ease; }
+        .report-download-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+        .report-download-actions .btn-primary { margin-top:0; min-height:54px; display:flex; align-items:center; justify-content:center; gap:9px; box-shadow:0 10px 22px rgba(15,23,42,.13); }
+        .btn-download-excel { background:linear-gradient(135deg,#16a34a,#15803d); border:1px solid #22c55e; }
+        .btn-download-excel:hover { background:linear-gradient(135deg,#15803d,#166534); box-shadow:0 13px 26px rgba(22,163,74,.25); }
+        .btn-download-payroll { background:linear-gradient(135deg,#2563eb,#1d4ed8); border:1px solid #60a5fa; color:#fff; }
+        .btn-download-payroll:hover { background:linear-gradient(135deg,#1d4ed8,#1e40af); box-shadow:0 13px 26px rgba(37,99,235,.25); }
+        .profile-summary { padding:4px; }
+        .profile-avatar { width:58px; height:58px; display:grid; place-items:center; border-radius:18px; font-size:25px; color:#fff; background:linear-gradient(145deg,#2563eb,#7c3aed); box-shadow:0 12px 26px rgba(37,99,235,.25); }
+        .profile-heading { margin:12px 0 18px; display:flex; flex-direction:column; gap:3px; }
+        .profile-heading strong { font-size:1.16rem; color:var(--text-main); }
+        .profile-heading span, .edit-mode-header span { font-size:.75rem; color:var(--text-muted); }
+        .profile-data-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .profile-data { display:flex; flex-direction:column; gap:5px; padding:14px; border:1px solid var(--border-color); border-radius:14px; background:var(--input-bg); }
+        .profile-data span { font-size:.67rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--text-muted); }
+        .profile-data strong { font-size:.88rem; color:var(--text-main); }
+        .profile-data-wide { grid-column:1/-1; }
+        .profile-edit-btn { margin-top:14px; }
+        .edit-mode-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; padding:13px 14px; border-radius:14px; background:rgba(59,130,246,.09); border:1px solid rgba(59,130,246,.2); }
+        .edit-mode-header > div { display:flex; flex-direction:column; gap:2px; }
+        .mini-cancel-btn { padding:8px 11px; border-radius:9px; border:1px solid var(--border-color); background:var(--surface); color:var(--text-main); font-weight:700; cursor:pointer; }
+        .profile-edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .accordion-header span { transition:transform .2s ease; }
+        .accordion-content.open { animation:accordionReveal .22s ease; }
+        @keyframes accordionReveal { from { opacity:0; transform:translateY(-5px); } to { opacity:1; transform:none; } }
         .modal-content { max-width: 620px; }
         .accordion-item { box-shadow:0 8px 24px rgba(2,6,23,.12); }
         .accordion-header:hover { background:rgba(59,130,246,.08); }
@@ -426,6 +450,9 @@
             .resumen-item { padding:11px 6px; }
             .resumen-item .value { font-size:1.05rem; }
             .distribucion-roster { padding:13px; }
+            .report-download-actions { grid-template-columns:1fr; }
+            .profile-data-grid, .profile-edit-grid { grid-template-columns:1fr; }
+            .profile-data-wide { grid-column:auto; }
         }
         @media (min-width: 641px) and (max-width: 1024px) {
             body.roster-body { padding:20px; }
@@ -689,47 +716,43 @@
                     <div class="accordion-item">
                         <button class="accordion-header" onclick="toggleAccordion('acc-perfil')">👤 PERFIL DE USUARIO <span>▼</span></button>
                         <div id="acc-perfil" class="accordion-content">
-                            
-                            <!-- 1. CAMBIAR NOMBRE -->
-                            <div class="submodulo-title">Cambiar Nombre</div>
-                            <div class="form-group">
-                                <label>Nuevo Nombre de Usuario</label>
-                                <input type="text" id="cfg-nombre-usuario">
-                                <button class="btn-primary" style="margin-top:8px;" onclick="cambiarNombreUsuario()">Actualizar Nombre</button>
+                            <div id="perfil-vista-info" class="profile-summary">
+                                <div class="profile-avatar" aria-hidden="true">👤</div>
+                                <div class="profile-heading">
+                                    <strong id="perfil-info-nombre">Usuario</strong>
+                                    <span>Datos registrados en este dispositivo</span>
+                                </div>
+                                <div class="profile-data-grid">
+                                    <div class="profile-data"><span>Contraseña</span><strong>••••••••</strong></div>
+                                    <div class="profile-data"><span>Régimen</span><strong id="perfil-info-regimen">Sin configurar</strong></div>
+                                    <div class="profile-data profile-data-wide"><span>Inicio del régimen</span><strong id="perfil-info-inicio">—</strong></div>
+                                </div>
+                                <button class="btn-primary profile-edit-btn" onclick="mostrarEdicionPerfil()">✏️ Editar perfil</button>
                             </div>
 
-                            <!-- 2. CAMBIAR CONTRASEÑA -->
-                            <div class="submodulo-title">Cambiar Contraseña</div>
-                            <div class="form-group">
-                                <label>Contraseña Actual</label>
-                                <input type="password" id="cfg-pass-actual" placeholder="••••••••">
-                            </div>
-                            <div class="form-group">
-                                <label>Nueva Contraseña</label>
-                                <input type="password" id="cfg-pass-nueva" placeholder="••••••••">
-                            </div>
-                            <div class="form-group">
-                                <label>Confirmar Nueva Contraseña</label>
-                                <input type="password" id="cfg-pass-confirm" placeholder="••••••••">
-                            </div>
-                            <button class="btn-primary" onclick="cambiarPasswordUsuario()">Actualizar Contraseña</button>
+                            <div id="perfil-vista-edicion" style="display:none;">
+                                <div class="edit-mode-header"><div><strong>Editar información</strong><span>Modifica únicamente los datos necesarios</span></div><button class="mini-cancel-btn" onclick="cancelarEdicionPerfil()">Cancelar</button></div>
+                                <div class="submodulo-title">Nombre de usuario</div>
+                                <div class="form-group">
+                                    <label>Nuevo nombre</label>
+                                    <input type="text" id="cfg-nombre-usuario">
+                                    <button class="btn-primary" style="margin-top:8px;" onclick="cambiarNombreUsuario()">Guardar nombre</button>
+                                </div>
 
-                            <!-- 3. CAMBIAR DÍAS ROSTER -->
-                            <div class="submodulo-title">Cambiar Días Roster</div>
-                            <div class="form-group">
-                                <label>Días Laborados (Guardia)</label>
-                                <input type="number" id="cfg-roster-trabajo" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Días Descanso (Libre)</label>
-                                <input type="number" id="cfg-roster-descanso" min="1">
-                            </div>
-                            <div class="form-group">
-                                <label>Fecha de Inicio del Régimen</label>
-                                <input type="date" id="cfg-roster-inicio">
-                            </div>
-                            <button class="btn-primary" onclick="cambiarDiasRoster()">Actualizar Régimen Roster</button>
+                                <div class="submodulo-title">Seguridad</div>
+                                <div class="form-group"><label>Contraseña actual</label><input type="password" id="cfg-pass-actual" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Nueva contraseña</label><input type="password" id="cfg-pass-nueva" placeholder="••••••••"></div>
+                                <div class="form-group"><label>Confirmar nueva contraseña</label><input type="password" id="cfg-pass-confirm" placeholder="••••••••"></div>
+                                <button class="btn-primary" onclick="cambiarPasswordUsuario()">Guardar contraseña</button>
 
+                                <div class="submodulo-title">Régimen de trabajo</div>
+                                <div class="profile-edit-grid">
+                                    <div class="form-group"><label>Días de guardia</label><input type="number" id="cfg-roster-trabajo" min="1"></div>
+                                    <div class="form-group"><label>Días de descanso</label><input type="number" id="cfg-roster-descanso" min="1"></div>
+                                </div>
+                                <div class="form-group"><label>Fecha de inicio</label><input type="date" id="cfg-roster-inicio"></div>
+                                <button class="btn-primary" onclick="cambiarDiasRoster()">Guardar régimen</button>
+                            </div>
                         </div>
                     </div>
 
@@ -912,7 +935,10 @@
                                 </select>
                             </div>
 
-                            <button class="btn-primary" onclick="descargarAmbosReportes()">📥 Descargar Roster y Boleta (2 Archivos)</button>
+                            <div class="report-download-actions">
+                                <button class="btn-primary btn-download-excel" onclick="descargarReporte('roster')"><span>📊</span><span>Descargar Roster para Excel</span></button>
+                                <button class="btn-primary btn-download-payroll" onclick="descargarReporte('boleta')"><span>🧾</span><span>Descargar Boleta de Pago</span></button>
+                            </div>
 
                         </div>
                     </div>
@@ -1266,6 +1292,7 @@
             const body = document.getElementById('body-main');
             body.classList.remove('activador-body');
             body.classList.add('roster-body');
+            body.classList.add('light-mode');
 
             inicializarSistemaRoster();
         }
@@ -1576,6 +1603,34 @@
             }
         }
 
+        function renderizarPerfilInformativo() {
+            if (!usuarioActual) return;
+            document.getElementById('perfil-info-nombre').textContent = usuarioActual.nombre || 'Usuario';
+            const roster = usuarioActual.roster;
+            document.getElementById('perfil-info-regimen').textContent = roster ? `${roster.diasTrabajo} × ${roster.diasDescanso}` : 'Sin configurar';
+            if (roster?.fechaInicio) {
+                const fecha = new Date(roster.fechaInicio);
+                document.getElementById('perfil-info-inicio').textContent = fecha.toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' });
+            } else {
+                document.getElementById('perfil-info-inicio').textContent = '—';
+            }
+        }
+
+        function mostrarEdicionPerfil() {
+            if (!usuarioActual?.roster) return;
+            document.getElementById('perfil-vista-info').style.display = 'none';
+            document.getElementById('perfil-vista-edicion').style.display = 'block';
+        }
+
+        function cancelarEdicionPerfil() {
+            document.getElementById('perfil-vista-edicion').style.display = 'none';
+            document.getElementById('perfil-vista-info').style.display = 'block';
+            document.getElementById('cfg-pass-actual').value = '';
+            document.getElementById('cfg-pass-nueva').value = '';
+            document.getElementById('cfg-pass-confirm').value = '';
+            renderizarPerfilInformativo();
+        }
+
         function abrirModalConfiguracion() {
             document.getElementById('cfg-nombre-usuario').value = usuarioActual.nombre;
             
@@ -1591,6 +1646,9 @@
             document.getElementById('cfg-pass-actual').value = '';
             document.getElementById('cfg-pass-nueva').value = '';
             document.getElementById('cfg-pass-confirm').value = '';
+            renderizarPerfilInformativo();
+            document.getElementById('perfil-vista-info').style.display = 'block';
+            document.getElementById('perfil-vista-edicion').style.display = 'none';
 
             const rem = usuarioActual.remuneracion;
             const badge = document.getElementById('badge-remun-status');
@@ -1671,6 +1729,7 @@
             guardarUsuarios(usuarios);
             actualizarSesionLocal();
             cargarVistaPrincipal();
+            cancelarEdicionPerfil();
             alert('Nombre actualizado.');
         }
 
@@ -1701,6 +1760,7 @@
             document.getElementById('cfg-pass-actual').value = '';
             document.getElementById('cfg-pass-nueva').value = '';
             document.getElementById('cfg-pass-confirm').value = '';
+            cancelarEdicionPerfil();
         }
 
         function cambiarDiasRoster() {
@@ -1727,6 +1787,7 @@
 
             actualizarSesionLocal();
             cargarVistaPrincipal();
+            cancelarEdicionPerfil();
             alert("✅ Régimen de Roster actualizado con éxito.");
         }
 
@@ -1846,7 +1907,8 @@
             return aporteFondo + primaSeguro + (base * (comisionesFlujo[tipoPension] || 0));
         }
 
-        function descargarAmbosReportes() {
+        function descargarReporte(tipoReporte) {
+            if (!['roster', 'boleta'].includes(tipoReporte)) return;
             if (!usuarioActual.remuneracion) {
                 alert("❌ NO PUEDES DESCARGAR EL REPORTE TODAVÍA.\nDebes configurar e ingresar tu Remuneración antes de generar las descargas.");
                 return;
@@ -1898,7 +1960,10 @@
             }
 
             const csvExcel = "data:text/csv;charset=utf-8," + encodeURIComponent('\uFEFF' + csvContent);
-            descargarArchivo(csvExcel, `Roster_${nombresMeses[mesInt]}_${anioInt}.csv`);
+            if (tipoReporte === 'roster') {
+                descargarArchivo(csvExcel, `Roster_${nombresMeses[mesInt]}_${anioInt}.csv`);
+                return;
+            }
 
             const rem = usuarioActual.remuneracion;
             const basico = rem.sueldo;
@@ -1967,9 +2032,7 @@
             boletaTxt += `NETO A PAGAR    : S/. ${netoAPagar.toFixed(2)}\n`;
             boletaTxt += `==========================================================\n`;
 
-            setTimeout(() => {
-                descargarArchivo("data:text/plain;charset=utf-8," + encodeURIComponent(boletaTxt), `Boleta_Pago_${nombresMeses[mesInt]}_${anioInt}.txt`);
-            }, 500);
+            descargarArchivo("data:text/plain;charset=utf-8," + encodeURIComponent('\uFEFF' + boletaTxt), `Boleta_Pago_${nombresMeses[mesInt]}_${anioInt}.txt`);
         }
 
         function descargarArchivo(dataUri, fileName) {
