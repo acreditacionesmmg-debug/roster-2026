@@ -1022,10 +1022,20 @@
 
                 // Elimina inmediatamente los datos del reporte de la barra e historial.
                 history.replaceState({}, document.title, window.location.pathname);
-                document.body.innerHTML = `<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#f1f5f9;font-family:Arial,sans-serif"><section style="max-width:420px;background:white;padding:28px;border-radius:20px;box-shadow:0 20px 50px rgba(15,23,42,.16);text-align:center"><div style="font-size:42px">✅</div><h2 style="color:#0f172a">Reporte preparado</h2><p style="color:#64748b">La descarga comenzará automáticamente. Si no comienza, pulsa el botón.</p><a id="descarga-manual" href="${objectUrl}" download="${nombre}" style="display:block;padding:14px;background:#2563eb;color:white;border-radius:12px;text-decoration:none;font-weight:700">Descargar ${nombre}</a><p style="font-size:12px;color:#94a3b8;margin-top:18px">Después de guardar puedes cerrar esta pestaña y volver a Roster Laboral.</p></section></main>`;
+                document.body.innerHTML = `<main style="min-height:100vh;display:grid;place-items:center;padding:24px;background:#f1f5f9;font-family:Arial,sans-serif"><section style="width:100%;max-width:420px;background:white;padding:28px;border-radius:20px;box-shadow:0 20px 50px rgba(15,23,42,.16);text-align:center"><div style="font-size:42px">📄</div><h2 style="color:#0f172a;margin-bottom:8px">Reporte preparado</h2><p style="color:#64748b;margin-top:0">Pulsa Descargar. Si la APK no muestra el archivo, usa Copiar contenido y pégalo en Excel o en una nota.</p><div style="display:grid;gap:10px"><a id="descarga-manual" href="${objectUrl}" download="${nombre}" style="display:block;padding:14px;background:#2563eb;color:white;border-radius:12px;text-decoration:none;font-weight:700">Descargar ${nombre}</a><button id="copiar-reporte" style="padding:14px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;border-radius:12px;font-weight:700">Copiar contenido</button><button id="volver-roster" style="padding:14px;border:0;background:#0f172a;color:#fff;border-radius:12px;font-weight:700">← Volver al Roster</button></div><p id="mensaje-descarga" style="font-size:12px;color:#64748b;margin-top:16px">No cierres la aplicación: puedes regresar con el botón anterior.</p></section></main>`;
 
-                document.getElementById('descarga-manual').click();
-                setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+                document.getElementById('copiar-reporte').onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(new TextDecoder().decode(bytes));
+                        document.getElementById('mensaje-descarga').textContent = 'Contenido copiado correctamente.';
+                    } catch (error) {
+                        document.getElementById('mensaje-descarga').textContent = 'No se pudo copiar automáticamente en esta APK.';
+                    }
+                };
+                document.getElementById('volver-roster').onclick = () => {
+                    window.location.href = window.location.pathname;
+                };
+                setTimeout(() => URL.revokeObjectURL(objectUrl), 10 * 60 * 1000);
             } catch (error) {
                 console.error('No se pudo reconstruir el reporte:', error);
                 history.replaceState({}, document.title, window.location.pathname);
@@ -2129,7 +2139,7 @@
                 // navegador sin enviar al usuario a Play Store/Galaxy Store.
                 const enlaceExterno = document.createElement('a');
                 enlaceExterno.href = urlFinal;
-                enlaceExterno.target = '_blank';
+                enlaceExterno.target = '_system';
                 enlaceExterno.rel = 'noopener noreferrer external';
                 enlaceExterno.style.display = 'none';
                 document.body.appendChild(enlaceExterno);
