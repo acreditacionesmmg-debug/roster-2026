@@ -198,7 +198,6 @@
         }
         .header h1 { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
         .header p.nombre-usuario { font-size: 0.9rem; color: var(--verde-limon); font-weight: 700; margin-top: 2px; }
-        .estado-acceso { display:inline-flex; margin-top:8px; padding:5px 10px; border-radius:999px; background:rgba(59,130,246,.12); border:1px solid rgba(59,130,246,.25); color:var(--text-muted); font-size:.68rem; font-weight:700; }
 
         .btn-config-icon {
             position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
@@ -477,7 +476,7 @@
             <!-- Resumen de Costo -->
             <div class="alert alert-light border d-flex justify-content-between align-items-center mb-4 py-3">
                 <span class="fw-semibold text-secondary">Total a cancelar:</span>
-                <span class="fs-4 fw-bold text-dark">S/. 15.00</span>
+                <span class="fs-4 fw-bold text-dark">S/. 10.00</span>
             </div>
 
             <!-- Métodos de Pago Informativos -->
@@ -580,7 +579,7 @@
                 <div class="form-body">
                     <div class="form-group">
                         <label>Usuario</label>
-                        <input type="text" id="login-usuario" placeholder="Ej. Amancio Alvaro">
+                        <input type="text" id="login-usuario" placeholder="Escribe tu nombre">
                     </div>
                     <div class="form-group">
                         <label>Contraseña</label>
@@ -603,7 +602,7 @@
                 <div class="form-body">
                     <div class="form-group">
                         <label>Usuario</label>
-                        <input type="text" id="reg-usuario" placeholder="Ej. Amancio Alvaro">
+                        <input type="text" id="reg-usuario" placeholder="Escribe tu nombre">
                     </div>
                     <div class="form-group">
                         <label>Contraseña</label>
@@ -649,7 +648,6 @@
                 <div class="header">
                     <h1 id="roster-titulo-regimen">Roster de Trabajo</h1>
                     <p id="roster-nombre-usuario" class="nombre-usuario">Usuario</p>
-                    <span id="roster-estado-acceso" class="estado-acceso">Comprobando acceso…</span>
                     <button class="btn-config-icon" onclick="abrirModalConfiguracion()" title="Configuración">⚙️</button>
                 </div>
 
@@ -1090,8 +1088,6 @@
 
             const transcurridoPrueba = Math.max(0, ahoraSeguro - inicioPrueba);
             if (transcurridoPrueba < DURACION_PRUEBA_MS) {
-                const diasRestantes = Math.max(1, Math.ceil((DURACION_PRUEBA_MS - transcurridoPrueba) / MS_DIA));
-                localStorage.setItem('roster_estado_acceso', `Prueba gratuita: ${diasRestantes} día(s) restante(s)`);
                 desbloquearAplicativo();
                 return; // Durante la prueba no se realiza ninguna consulta a Turso.
             }
@@ -1492,7 +1488,6 @@
 
             mostrarVista('view-calendario');
             document.getElementById('roster-nombre-usuario').textContent = usuarioActual.nombre;
-            document.getElementById('roster-estado-acceso').textContent = localStorage.getItem('roster_estado_acceso') || 'Acceso local';
             document.getElementById('roster-titulo-regimen').textContent = `Roster (${usuarioActual.roster.diasTrabajo}x${usuarioActual.roster.diasDescanso})`;
             document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
             document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
