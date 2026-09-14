@@ -50,6 +50,23 @@
         .whatsapp-link:hover { color: #1ebe5d; text-decoration: underline; }
         .section-box { background: #fafbfc; border: 1px solid #e1e4e8; border-radius: 12px; padding: 20px; margin-top: 20px; }
 
+
+        /* Activación compacta; estilos limitados a la pantalla de licencia. */
+        #section-activador .payment-card { padding: 20px; margin: 16px auto; }
+        #section-activador .section-box { padding: 14px; margin-top: 12px; }
+        #section-activador .section-box h5 { line-height: 1.3; }
+        #section-activador .section-box p { margin-bottom: 10px !important; }
+        #section-activador .section-box .mb-3 { margin-bottom: 10px !important; }
+        #section-activador .section-box .form-label { margin-bottom: 4px; }
+        #section-activador .section-box .btn { padding: 10px 12px; margin-top: 0; min-height: 44px; }
+        #section-activador .form-control, #section-activador .form-select { font-size: 16px; min-height: 42px; }
+        #resultadoSolicitud:empty, #resultadoActivacion:empty { display: none; }
+        #resultadoActivacion, #resultadoSolicitud { line-height: 1.4; }
+        @media (max-width: 480px) {
+            #section-activador { padding: 0 10px; }
+            #section-activador .payment-card { padding: 16px; margin: 10px auto; }
+        }
+
         /* Estilos generales del sistema Roster */
         :root {
             --bg-body: linear-gradient(135deg, #0b1120 0%, #151f32 100%);
@@ -513,13 +530,9 @@
 
             <!-- PASO 1: YA PAGASTE -> REGISTRAR SOLICITUD -->
             <div class="section-box border-primary bg-light" id="box-paso1-solicitud">
-                <h5 class="mb-2 text-center text-primary" style="font-size: 16px;"><i class="fas fa-paper-plane me-2"></i>1. ¿Ya pagaste? Registra tu solicitud</h5>
-                <p class="text-muted text-center small mb-3">Envíanos tus datos para que el administrador te asigne un código.</p>
+                <h5 class="mb-2 text-center text-primary" style="font-size: 16px;"><i class="fas fa-paper-plane me-2"></i>1. Solicita tu código</h5>
+                <p class="text-muted text-center small mb-3">Solicitud para este dispositivo: <strong id="dispositivoNombre"></strong></p>
                 <form id="formSolicitud" onsubmit="enviarSolicitud(event)">
-                    <div class="mb-2">
-                        <label class="form-label small text-muted">Correo con el que pagaste:</label>
-                        <input type="email" id="emailSolicitud" class="form-control form-control-sm" placeholder="tu-correo@gmail.com" required>
-                    </div>
                     <div class="mb-3">
                         <label class="form-label small text-muted">Aplicativo a solicitar:</label>
                         <select id="nombreAplicativo" class="form-select form-select-sm" required>
@@ -528,24 +541,20 @@
                             <option value="Sistema de Control de Inventarios">Sistema de Control de Inventarios</option>
                         </select>
                     </div>
-                    <button type="submit" id="btnEnviarSol" class="btn btn-primary btn-sm w-100 fw-bold">Enviar Solicitud al Admin</button>
+                    <button type="submit" id="btnEnviarSol" class="btn btn-primary btn-sm w-100 fw-bold">Solicitar</button>
                     <div id="resultadoSolicitud" class="mt-2 text-center small"></div>
                 </form>
             </div>
 
             <!-- PASO 2: TIENES CÓDIGO -> ACTIVAR LICENCIA -->
-            <div class="section-box">
-                <h5 class="mb-2 text-center" style="font-size: 16px;"><i class="fas fa-key text-warning me-2"></i>2. ¿Ya tienes tu código? Activa tu acceso</h5>
+            <div class="section-box" id="box-activacion">
+                <h5 class="mb-2 text-center" style="font-size: 16px;"><i class="fas fa-key text-warning me-2"></i>2. Activa este dispositivo</h5>
                 <p class="text-muted text-center small mb-3">Ingresa el código que te envió el administrador.</p>
-                <div class="mb-2">
-                    <label class="form-label small text-muted">Correo electrónico:</label>
-                    <input type="email" id="emailCliente" class="form-control form-control-sm" placeholder="tu-correo@gmail.com">
-                </div>
                 <div class="mb-3">
                     <label class="form-label small text-muted">Código de activación:</label>
-                    <input type="text" id="codigoLicencia" class="form-control form-control-sm" placeholder="Ej: ROSTER-2026">
+                    <input type="text" id="codigoLicencia" autocomplete="off" autocapitalize="characters" spellcheck="false" class="form-control form-control-sm" placeholder="Ej: ROSTER-2026">
                 </div>
-                <button onclick="verificarLicencia()" class="btn btn-success btn-sm w-100 fw-bold">Verificar y Activar Acceso</button>
+                <button id="btnActivar" onclick="verificarLicencia()" class="btn btn-success btn-sm w-100 fw-bold">Verificar y activar</button>
                 <div id="resultadoActivacion" class="mt-2 text-center small"></div>
             </div>
 
@@ -991,6 +1000,31 @@
     <script>
         const urlHttp = "https://turso-puente.acreditacionesmmg.workers.dev/";
         const tursoToken = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODYzOTA3ODQsImlkIjoiMDE5ZmVkMmItOGUwMS03NTBmLWE1OTctMzA5Mzk3NThhZDNiIiwia2lkIjoibGlxd0NQQ1RjVzZLMTJEUWNJMVhVejRCeGZUMWFnT3FDbHZ2Y3RnZ1BqQSIsInJpZCI6IjFjOTgzZGExLWI4MGUtNGE3OS05MjIxLTNhMDc1M2UyYzU0YiJ9.3KWHzJajGz62k_P-mvvBj25I1kwY8ZTJvSUCXUO61sILuwvZTpJoxzdLWr39nZI3DofY2PV_lVGW5BS4QunfAQ";
+
+        // Identidad aleatoria persistente de esta instalación del navegador.
+        // El campo histórico "email" almacena ahora esta identidad, no un correo.
+        function identidadDispositivo() {
+            const clave = 'roster_dispositivo_id';
+            let id = localStorage.getItem(clave);
+            if (!id) {
+                const bytes = crypto.getRandomValues(new Uint8Array(16));
+                id = 'equipo-' + Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+                localStorage.setItem(clave, id);
+            }
+            return id;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                const id = identidadDispositivo();
+                const tipo = /Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Móvil' : 'Computadora';
+                document.getElementById('dispositivoNombre').textContent = tipo + ' · ' + id.slice(-8).toUpperCase();
+            } catch (_) {
+                document.getElementById('dispositivoNombre').textContent = 'Permite el almacenamiento del navegador para continuar.';
+                document.getElementById('btnEnviarSol').disabled = true;
+                document.getElementById('btnActivar').disabled = true;
+            }
+        });
+
         const MS_DIA = 24 * 60 * 60 * 1000;
         const DURACION_PRUEBA_MS = 30 * MS_DIA;
         const TOLERANCIA_OFFLINE_MS = 7 * MS_DIA;
@@ -1097,7 +1131,7 @@
             const codigo = (localStorage.getItem('licencia_codigo_roster') || '').trim();
             const ultimaValidacion = Number(localStorage.getItem(CLAVE_ULTIMA_VALIDACION)) || 0;
 
-            if (!marcadaActiva || !email || !codigo) {
+            if (!marcadaActiva || !email || email !== identidadDispositivo() || !codigo) {
                 limpiarLicenciaLocal();
                 document.getElementById('resultadoActivacion').innerHTML = '<span class="text-danger fw-bold">Finalizó el periodo gratuito de 30 días. Para continuar debes pagar y activar una licencia.</span>';
                 return;
@@ -1111,6 +1145,8 @@
                               WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
                                 AND TRIM(codigo_activacion) = TRIM(?)
                                 AND LOWER(TRIM(nombre_aplicativo)) = LOWER('Aplicativo Roster Laboral')
+                                AND (SELECT COUNT(*) FROM licencias AS otra
+                                     WHERE TRIM(otra.codigo_activacion) = TRIM(licencias.codigo_activacion)) = 1
                               LIMIT 1;`,
                         args: [{ type: 'text', value: email }, { type: 'text', value: codigo }]
                     }
@@ -1161,20 +1197,20 @@
             inputs.forEach(el => el.disabled = true);
             
             const resultadoDiv = document.getElementById('resultadoSolicitud');
-            resultadoDiv.innerHTML = `<span class="text-success fw-bold"><i class="fas.fa-check-circle"></i> Ya enviaste una solicitud con el correo: <u>${correoGuardado}</u>. Espera que el administrador te asigne el código.</span>`;
+            resultadoDiv.innerHTML = `<span class="text-success fw-bold"><i class="fas.fa-check-circle"></i> Ya enviaste una solicitud desde este dispositivo: <u>${correoGuardado}</u>. Espera que el administrador te asigne el código.</span>`;
         }
 
         // 1. Función para enviar la solicitud de registro tras el pago (Con validación de duplicados por correo y aplicativo)
         async function enviarSolicitud(event) {
             event.preventDefault();
             const formulario = event.currentTarget;
-            const email = document.getElementById('emailSolicitud').value.trim().toLowerCase();
+            const email = identidadDispositivo();
             const aplicativo = document.getElementById('nombreAplicativo').value.trim();
             const resultadoDiv = document.getElementById('resultadoSolicitud');
             const botonEnviar = formulario.querySelector('button[type="submit"], button:not([type])');
 
             if (!email || !aplicativo) {
-                resultadoDiv.innerHTML = '<span class="text-danger">Completa el correo y el nombre del aplicativo.</span>';
+                resultadoDiv.innerHTML = '<span class="text-danger">Selecciona el aplicativo.</span>';
                 return;
             }
 
@@ -1235,7 +1271,7 @@
                     resultadoDiv.innerHTML = '<span class="text-success fw-bold">✅ Solicitud enviada correctamente. Espera que el administrador te asigne el código.</span>';
                     formulario.reset();
                 } else if (responseInsert.ok && resObj && !resObj.error && filasInsertadas === 0) {
-                    resultadoDiv.innerHTML = '<span class="text-danger">⚠️ Ya existe un registro con este correo y este aplicativo. No se creó otro.</span>';
+                    resultadoDiv.innerHTML = '<span class="text-danger">⚠️ Ya existe un registro con este dispositivo y este aplicativo. No se creó otro.</span>';
                 } else {
                     console.error("Respuesta completa de Turso:", data);
                     resultadoDiv.innerHTML = `<span class="text-danger">Error de Base de Datos: ${resObj?.error?.message || JSON.stringify(data)}</span>`;
@@ -1250,15 +1286,18 @@
 
         // 2. Función para verificar el código, validar dispositivos y conceder acceso
         async function verificarLicencia() {
-            const email = document.getElementById('emailCliente').value.trim().toLowerCase();
+            const email = identidadDispositivo();
             const codigo = document.getElementById('codigoLicencia').value.trim();
             const resultadoDiv = document.getElementById('resultadoActivacion');
 
             if (!email || !codigo) {
-                resultadoDiv.innerHTML = '<span class="text-danger">Por favor completa ambos campos.</span>';
+                resultadoDiv.innerHTML = '<span class="text-danger">Ingresa tu código de activación.</span>';
                 return;
             }
 
+            const botonActivar = document.getElementById('btnActivar');
+            if (botonActivar.disabled) return;
+            botonActivar.disabled = true;
             resultadoDiv.innerHTML = '<span class="text-info">Verificando y activando...</span>';
 
             // La condición dispositivos_conectados = 0 hace que solamente el primer
@@ -1273,7 +1312,10 @@
                                   WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
                                     AND TRIM(codigo_activacion) = TRIM(?)
                                     AND UPPER(TRIM(codigo_activacion)) <> 'PENDIENTE'
-                                    AND dispositivos_conectados = 0;`,
+                                    AND LOWER(TRIM(nombre_aplicativo)) = LOWER('Aplicativo Roster Laboral')
+                                    AND (dispositivos_conectados = 0 OR (dispositivos_conectados = 1 AND estado = 'activo'))
+                                    AND (SELECT COUNT(*) FROM licencias AS otra
+                                         WHERE TRIM(otra.codigo_activacion) = TRIM(licencias.codigo_activacion)) = 1;`,
                             args: [
                                 { type: "text", value: email },
                                 { type: "text", value: codigo }
@@ -1288,6 +1330,7 @@
                                   WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
                                     AND TRIM(codigo_activacion) = TRIM(?)
                                     AND UPPER(TRIM(codigo_activacion)) <> 'PENDIENTE'
+                                    AND LOWER(TRIM(nombre_aplicativo)) = LOWER('Aplicativo Roster Laboral')
                                   LIMIT 1;`,
                             args: [
                                 { type: "text", value: email },
@@ -1331,13 +1374,15 @@
                     resultadoDiv.innerHTML = '<span class="text-success fw-bold"><i class="fas fa-check-circle"></i> ¡Licencia válida y activada! Dispositivo registrado y acceso concedido.</span>';
                     setTimeout(desbloquearAplicativo, 1000);
                 } else if (filasEncontradas.length > 0) {
-                    resultadoDiv.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Este código ya está activado en otro dispositivo. Acceso denegado.</span>';
+                    resultadoDiv.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> No se pudo activar: el código está duplicado, bloqueado o ya está en uso. Contacta al administrador.</span>';
                 } else {
-                    resultadoDiv.innerHTML = '<span class="text-danger">Código incorrecto, correo no registrado o la licencia aún está pendiente.</span>';
+                    resultadoDiv.innerHTML = '<span class="text-danger">El código no corresponde a este dispositivo o todavía está pendiente.</span>';
                 }
             } catch (error) {
                 console.error(error);
                 resultadoDiv.innerHTML = '<span class="text-danger">Error al conectar o actualizar la base de datos.</span>';
+            } finally {
+                botonActivar.disabled = false;
             }
         }
 
