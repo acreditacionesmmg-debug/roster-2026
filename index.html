@@ -729,7 +729,8 @@
                     <div class="feriados-card-purple">
                         <div class="title">Feriados del Mes</div>
                         <div id="cnt-feriados-txt" class="count">0 feriado(s)</div>
-                        <div id="dias-feriados-txt" class="dias-list">Días: Ninguno</div>
+                        <div id="dias-feriados-txt" class="dias-list" aria-live="polite"></div>
+                        <p style="font-size:12px;line-height:1.5;margin:12px 0 0;opacity:.9">Para el adicional de planilla se consideran únicamente los feriados en Guardia o Trabajo Extra.</p>
                     </div>
                 </div>
 
@@ -1775,6 +1776,7 @@ window.addEventListener('online', () => { if (usuarioActual?.roster) actualizarF
 
             let cGuardia = 0, cLibre = 0;
             let diasFeriadosList = [];
+            const feriadosPorEstado = { trabajo: [], descanso: [], ausencia: [] };
             const fechaHoy = new Date();
 
             for (let dia = 1; dia <= ultimoDiaMes.getDate(); dia++) {
@@ -1800,6 +1802,9 @@ window.addEventListener('online', () => { if (usuarioActual?.roster) actualizarF
 
                     if (novedad.esFeriado) {
                         diasFeriadosList.push(dia);
+                        const conAusencia = ['falta_injustificada', 'falta_justificada'].includes(novedad.estado);
+                        const categoria = conAusencia ? 'ausencia' : (esGuardia || novedad.estado === 'trabajado_extra' ? 'trabajo' : 'descanso');
+                        feriadosPorEstado[categoria].push(dia);
                         const icon = document.createElement("span");
                         icon.className = "badge-feriado";
                         icon.textContent = "🎉";
@@ -1831,10 +1836,20 @@ window.addEventListener('online', () => { if (usuarioActual?.roster) actualizarF
             document.getElementById('distribucion-pct').textContent = `${pctGuardia}% guardia · ${100 - pctGuardia}% libre`;
 
             const feriadosCount = diasFeriadosList.length;
-            document.getElementById("cnt-feriados-txt").textContent = `${feriadosCount} feriado(s)`;
-            document.getElementById("dias-feriados-txt").textContent = feriadosCount > 0 
-                ? `Días: ${diasFeriadosList.join(', ')}` 
-                : 'Días: Ninguno';
+            document.getElementById("cnt-feriados-txt").textContent = `Total: ${feriadosCount} ${feriadosCount === 1 ? 'día' : 'días'}`;
+            const desglose = document.getElementById('dias-feriados-txt');
+            desglose.replaceChildren();
+            for (const [categoria, etiqueta] of [['trabajo', 'En días de trabajo'], ['descanso', 'En descanso'], ['ausencia', 'Con ausencia']]) {
+                const dias = feriadosPorEstado[categoria];
+                if (categoria === 'ausencia' && !dias.length) continue;
+                const fila = document.createElement('div');
+                fila.style.marginTop = '6px';
+                const titulo = document.createElement('strong');
+                titulo.textContent = `${etiqueta}: ${dias.length}`;
+                fila.appendChild(titulo);
+                if (dias.length) fila.appendChild(document.createTextNode(` — ${dias.length === 1 ? 'día' : 'días'} ${dias.join(', ')}`));
+                desglose.appendChild(fila);
+            }
         }
 
         function cambiarMes(delta) {
