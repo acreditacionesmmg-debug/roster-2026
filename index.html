@@ -677,7 +677,7 @@
                 </div>
 
                 <div class="content">
-                    <details id="panel-feriados" style="margin-bottom:16px;padding:12px;border:1px solid var(--border-color);border-radius:12px">
+                    <div id="feriados-inicio"><div id="feriados-controles">                    <details id="panel-feriados" style="margin-bottom:16px;padding:12px;border:1px solid var(--border-color);border-radius:12px">
                         <summary style="cursor:pointer;font-weight:700">🌎 País y feriados</summary>
                         <div class="form-group" style="margin-top:12px">
                             <label for="pais-feriados">País donde trabajas (confirma una vez)</label>
@@ -691,7 +691,7 @@
                         <button class="btn-primary btn-secondary" onclick="actualizarFeriadosAhora()">Actualizar feriados</button>
                         <p style="font-size:12px;margin-top:8px">Puedes cambiar el país y excluir o agregar feriados al tocar un día. La región incluye solo las divisiones disponibles en el servicio. Datos de Nager.Date: la cobertura puede ser incompleta; puedes agregar o corregir feriados manualmente.</p>
                     </details>
-                    <p id="estado-feriados" role="status" style="font-size:12px;margin-bottom:12px"></p>
+                    <p id="estado-feriados" role="status" style="font-size:12px;margin-bottom:12px"></p></div></div>
 
                     <div class="leyenda">
                         <div class="leyenda-item guardia"><span class="badge-dot"></span><span id="leyenda-guardia-txt">Guardia</span></div>
@@ -749,6 +749,7 @@
                     <button class="btn-close-red" onclick="cerrarModalConfiguracion()" title="Cerrar">✕</button>
                 </div>
                 
+                <div id="feriados-configuracion"></div>
                 <div id="accordion-container">
                     
                     <!-- PERFIL -->
@@ -1583,7 +1584,7 @@
             document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
             document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
 
-            document.getElementById('panel-feriados').open = !configFeriados().pais;
+            ubicarControlesFeriados();
             prepararPaisesFeriados();
             renderizarCalendario();
         }
@@ -1714,12 +1715,19 @@ async function prepararPaisesFeriados() {
         estadoFeriados('No se pudo cargar la lista de países. Pulsa Actualizar con conexión.');
     }
 }
+function ubicarControlesFeriados() {
+    const confirmado = !!configFeriados().pais;
+    const destino = document.getElementById(confirmado ? 'feriados-configuracion' : 'feriados-inicio');
+    destino.appendChild(document.getElementById('feriados-controles'));
+    document.getElementById('panel-feriados').open = !confirmado;
+    document.getElementById('feriados-inicio').hidden = confirmado;
+}
 function guardarPaisFeriados() {
     const pais = document.getElementById('pais-feriados').value;
     if (!pais) { estadoFeriados('Selecciona un país antes de confirmar.'); return; }
     const cfg = configFeriados();
     usuarioActual.calendarioFeriados = { ...cfg, pais, region: cfg.pais === pais ? cfg.region || '' : '' };
-    actualizarSesionLocal(); renderizarCalendario(); llenarRegionesFeriados();
+    actualizarSesionLocal(); ubicarControlesFeriados(); renderizarCalendario(); llenarRegionesFeriados();
 }
 function guardarRegionFeriados() {
     if (!configFeriados().pais) return;
