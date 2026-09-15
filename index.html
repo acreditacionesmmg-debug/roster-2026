@@ -15,6 +15,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        #carga-inicial { display: none; }
+        body.comprobando-acceso #section-activador,
+        body.comprobando-acceso #section-roster { display: none !important; }
+        body.comprobando-acceso #carga-inicial {
+            display: flex; position: fixed; inset: 0; z-index: 9999;
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 10px; background: #f4f7f6; color: #334155;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        #carga-inicial strong { font-size: 24px; }
+        #carga-inicial span { font-size: 14px; }
+
         /* Estilos generales del activador */
         body.activador-body {
             background-color: #f4f7f6;
@@ -478,7 +490,11 @@
         }
     </style>
 </head>
-<body id="body-main" class="activador-body">
+<body id="body-main" class="activador-body comprobando-acceso">
+    <div id="carga-inicial" role="status" aria-live="polite">
+        <strong>Roster Laboral</strong>
+        <span>Comprobando acceso…</span>
+    </div>
 
     <!-- SECCIÓN 1: ACTIVADOR Y PAGO DE LICENCIA -->
     <div id="section-activador" class="container">
@@ -1033,9 +1049,17 @@
         const CLAVE_ULTIMA_VALIDACION = 'licencia_ultima_validacion_roster';
 
         // Flujo: 30 días sin Turso; después, licencia online con tolerancia offline de 7 días.
-        document.addEventListener('DOMContentLoaded', () => {
-            if (procesarDescargaExterna()) return;
-            validarLicenciaAlAbrir();
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (procesarDescargaExterna()) return;
+                await validarLicenciaAlAbrir();
+            } catch (error) {
+                console.error('No se pudo iniciar la comprobación de acceso:', error);
+                const resultado = document.getElementById('resultadoActivacion');
+                if (resultado) resultado.textContent = 'No se pudo comprobar el acceso. Permite el almacenamiento del aplicativo y vuelve a abrirlo.';
+            } finally {
+                document.body.classList.remove('comprobando-acceso');
+            }
         });
 
         function procesarDescargaExterna() {
