@@ -677,6 +677,22 @@
                 </div>
 
                 <div class="content">
+                    <details id="panel-feriados" style="margin-bottom:16px;padding:12px;border:1px solid var(--border-color);border-radius:12px">
+                        <summary style="cursor:pointer;font-weight:700">🌎 País y feriados</summary>
+                        <div class="form-group" style="margin-top:12px">
+                            <label for="pais-feriados">País donde trabajas (confirma una vez)</label>
+                            <select id="pais-feriados"><option value="">Cargando países…</option></select>
+                            <button class="btn-primary" style="margin-top:8px" onclick="guardarPaisFeriados()">Confirmar país</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="region-feriados">Región (código territorial del calendario)</label>
+                            <select id="region-feriados" onchange="guardarRegionFeriados()"><option value="">Solo feriados nacionales</option></select>
+                        </div>
+                        <button class="btn-primary btn-secondary" onclick="actualizarFeriadosAhora()">Actualizar feriados</button>
+                        <p style="font-size:12px;margin-top:8px">Puedes cambiar el país y excluir o agregar feriados al tocar un día. La región incluye solo las divisiones disponibles en el servicio. Datos de Nager.Date: la cobertura puede ser incompleta; puedes agregar o corregir feriados manualmente.</p>
+                    </details>
+                    <p id="estado-feriados" role="status" style="font-size:12px;margin-bottom:12px"></p>
+
                     <div class="leyenda">
                         <div class="leyenda-item guardia"><span class="badge-dot"></span><span id="leyenda-guardia-txt">Guardia</span></div>
                         <div class="leyenda-item libre"><span class="badge-dot"></span><span id="leyenda-libre-txt">Libre</span></div>
@@ -999,6 +1015,12 @@
                         <input type="checkbox" id="modal-feriado">
                         <label for="modal-feriado">🎉 Marcar como Día Feriado</label>
                     </div>
+                </div>
+                <div class="form-group">
+                    <p id="nota-feriado-automatico" style="font-size:13px"></p>
+                    <label for="modal-nombre-feriado">Nombre del feriado</label>
+                    <input id="modal-nombre-feriado" type="text" maxlength="160" placeholder="Ej. Feriado de mi localidad">
+                    <button type="button" class="btn-primary btn-secondary" style="margin-top:8px" onclick="restaurarFeriadoDia()">Restaurar calendario automático</button>
                 </div>
                 <div class="form-group">
                     <label>Comentario / Observación</label>
@@ -1561,6 +1583,8 @@
             document.getElementById('leyenda-guardia-txt').textContent = `Guardia (${usuarioActual.roster.diasTrabajo})`;
             document.getElementById('leyenda-libre-txt').textContent = `Libre (${usuarioActual.roster.diasDescanso})`;
 
+            document.getElementById('panel-feriados').open = !configFeriados().pais;
+            prepararPaisesFeriados();
             renderizarCalendario();
         }
 
@@ -1582,6 +1606,139 @@
             return diaEnCiclo < roster.diasTrabajo;
         }
 
+// Feriados por perfil; caché compartida de datos públicos por país y año.
+const feriadosEnCurso = new Map();
+const feriadosIntentos = new Map();
+function leerCacheFeriados(clave) {
+    try { return JSON.parse(localStorage.getItem(clave) || 'null'); } catch (_) { return null; }
+}
+function configFeriados() { return usuarioActual?.calendarioFeriados || {}; }
+function claveCacheFeriados(pais, anio) { return `roster_feriados_v1_${pais}_${anio}`; }
+function datosFeriados(pais, anio) { return leerCacheFeriados(claveCacheFeriados(pais, anio))?.dias || []; }
+function feriadoDelDia(fecha) {
+    const cfg = configFeriados();
+    const nov = usuarioActual?.novedades?.[fecha];
+    const ajuste = cfg.ajustes?.[`${cfg.pais || 'manual'}:${cfg.region || ''}:${fecha}`];
+    const nombres = cfg.pais ? datosFeriados(cfg.pais, Number(fecha.slice(0,4)))
+        .filter(d => d.date === fecha && (d.global || (cfg.region && d.counties?.includes(cfg.region))))
+        .map(d => d.localName || d.name) : [];
+    const automatico = [...new Set(nombres)].join(' / ');
+    if (ajuste) return { activo: ajuste.activo, nombre: ajuste.activo ? (ajuste.nombre || automatico || 'Feriado personal') : '', automatico };
+    return { activo: !!(automatico || nov?.esFeriado), nombre: automatico || (nov?.esFeriado ? 'Feriado personal' : ''), automatico };
+}
+function novedadConFeriado(fecha, incluirNombre = false) {
+    const original = usuarioActual?.novedades?.[fecha] || {};
+    const f = feriadoDelDia(fecha);
+    return { ...original, esFeriado: f.activo, comentario: incluirNombre ? [f.activo ? `Feriado: ${f.nombre}` : '', original.comentario || ''].filter(Boolean).join(' · ') : original.comentario || '' };
+}
+function estadoFeriados(texto) { document.getElementById('estado-feriados').textContent = texto; }
+async function jsonFeriados(ruta) {
+    const control = new AbortController();
+    const espera = setTimeout(() => control.abort(), 10000);
+    try {
+        const respuesta = await fetch('https://date.nager.at/api/v3/' + ruta, { signal: control.signal });
+        if (!respuesta.ok) throw new Error('Servicio no disponible');
+        const datos = await respuesta.json();
+        if (!Array.isArray(datos)) throw new Error('Respuesta inválida');
+        return datos;
+    } finally { clearTimeout(espera); }
+}
+function llenarRegionesFeriados() {
+    const cfg = configFeriados();
+    const select = document.getElementById('region-feriados');
+    const regiones = [...new Set(datosFeriados(cfg.pais, anioActual).flatMap(d => d.counties || []))].sort();
+    select.replaceChildren(new Option('Solo feriados nacionales', ''));
+    if (cfg.region && !regiones.includes(cfg.region)) regiones.push(cfg.region);
+    regiones.forEach(r => select.add(new Option(r, r)));
+    select.value = cfg.region || '';
+    select.disabled = !cfg.pais;
+}
+async function cargarFeriados(anio, forzar = false) {
+    const cfg = configFeriados();
+    if (!cfg.pais) { estadoFeriados('Confirma tu país para consultar los feriados automáticamente.'); return false; }
+    const pais = cfg.pais;
+    const clave = claveCacheFeriados(pais, anio);
+    const cache = leerCacheFeriados(clave);
+    const vigente = cache && Date.now() - cache.fecha < 7 * MS_DIA;
+    if (!forzar && vigente) {
+        estadoFeriados(`Feriados de ${pais} · ${anio} guardados. Puedes excluirlos al tocar un día.`);
+        llenarRegionesFeriados(); return true;
+    }
+    if (feriadosEnCurso.has(clave)) return feriadosEnCurso.get(clave);
+    if (!forzar && Date.now() - (feriadosIntentos.get(clave) || 0) < 60000) return !!cache;
+    feriadosIntentos.set(clave, Date.now());
+    estadoFeriados(cache ? 'Mostrando feriados guardados; buscando actualizaciones…' : `Consultando feriados de ${pais} · ${anio}…`);
+    const tarea = (async () => {
+        try {
+            const dias = await jsonFeriados(`PublicHolidays/${anio}/${pais}`);
+            if (!dias.every(d => typeof d.date === 'string' && d.date.startsWith(`${anio}-`) && typeof d.localName === 'string' && typeof d.global === 'boolean')) throw new Error('Datos inválidos');
+            localStorage.setItem(clave, JSON.stringify({ fecha: Date.now(), dias: dias.filter(d => d.types?.includes('Public')) }));
+            if (configFeriados().pais === pais && anioActual === anio) {
+                renderizarCalendario();
+                llenarRegionesFeriados();
+                estadoFeriados(dias.length ? `Feriados de ${pais} · ${anio} actualizados. Selecciona región si corresponde.` : `El servicio no tiene feriados para ${pais} · ${anio}. Puedes marcarlos manualmente.`);
+            }
+            return true;
+        } catch (_) {
+            if (configFeriados().pais === pais && anioActual === anio) estadoFeriados(cache ? `Sin actualización: usando feriados guardados de ${anio}.` : `No se pudieron consultar los feriados de ${anio}. Conéctate y pulsa Actualizar; los manuales siguen disponibles.`);
+            return !!cache;
+        } finally { feriadosEnCurso.delete(clave); }
+    })();
+    feriadosEnCurso.set(clave, tarea);
+    return tarea;
+}
+async function prepararPaisesFeriados() {
+    const select = document.getElementById('pais-feriados');
+    const perfil = usuarioActual;
+    let paises = leerCacheFeriados('roster_paises_feriados_v1');
+    try {
+        if (!Array.isArray(paises)) {
+            paises = await jsonFeriados('AvailableCountries');
+            if (!paises.every(p => /^[A-Z]{2}$/.test(p.countryCode) && typeof p.name === 'string')) throw new Error('Países inválidos');
+            localStorage.setItem('roster_paises_feriados_v1', JSON.stringify(paises));
+        }
+        if (usuarioActual !== perfil) return;
+        let nombres;
+        try { nombres = new Intl.DisplayNames(['es'], { type: 'region' }); } catch (_) {}
+        select.replaceChildren(new Option('Selecciona tu país', ''));
+        paises.map(p => ({ codigo: p.countryCode, nombre: nombres?.of(p.countryCode) || p.name }))
+            .sort((a,b) => a.nombre.localeCompare(b.nombre)).forEach(p => select.add(new Option(p.nombre, p.codigo)));
+        const sugerencia = (navigator.language || '').match(/-([A-Za-z]{2})$/)?.[1]?.toUpperCase() || '';
+        select.value = configFeriados().pais || sugerencia;
+        llenarRegionesFeriados();
+    } catch (_) {
+        if (usuarioActual !== perfil) return;
+        select.replaceChildren(new Option('Conéctate para cargar los países', ''));
+        if (configFeriados().pais) select.add(new Option(configFeriados().pais, configFeriados().pais));
+        select.value = configFeriados().pais || '';
+        estadoFeriados('No se pudo cargar la lista de países. Pulsa Actualizar con conexión.');
+    }
+}
+function guardarPaisFeriados() {
+    const pais = document.getElementById('pais-feriados').value;
+    if (!pais) { estadoFeriados('Selecciona un país antes de confirmar.'); return; }
+    const cfg = configFeriados();
+    usuarioActual.calendarioFeriados = { ...cfg, pais, region: cfg.pais === pais ? cfg.region || '' : '' };
+    actualizarSesionLocal(); renderizarCalendario(); llenarRegionesFeriados();
+}
+function guardarRegionFeriados() {
+    if (!configFeriados().pais) return;
+    usuarioActual.calendarioFeriados.region = document.getElementById('region-feriados').value;
+    actualizarSesionLocal(); renderizarCalendario();
+}
+async function actualizarFeriadosAhora() { await prepararPaisesFeriados(); await cargarFeriados(anioActual, true); }
+function restaurarFeriadoDia() {
+    const cfg = configFeriados();
+    if (cfg.ajustes) delete cfg.ajustes[`${cfg.pais || 'manual'}:${cfg.region || ''}:${fechaSeleccionadaKey}`];
+    actualizarSesionLocal();
+    const f = feriadoDelDia(fechaSeleccionadaKey);
+    document.getElementById('modal-feriado').checked = f.activo;
+    document.getElementById('modal-nombre-feriado').value = f.nombre;
+    document.getElementById('nota-feriado-automatico').textContent = f.automatico ? `Calendario: ${f.automatico}` : 'Sin feriado automático para esta fecha.';
+    renderizarCalendario();
+}
+window.addEventListener('online', () => { if (usuarioActual?.roster) actualizarFeriadosAhora(); });
+
         function formatDateKey(fecha) {
             const y = fecha.getFullYear();
             const m = String(fecha.getMonth() + 1).padStart(2, '0');
@@ -1590,6 +1747,7 @@
         }
 
         function renderizarCalendario() {
+            cargarFeriados(anioActual);
             const grid = document.getElementById("calendario");
             const titulo = document.getElementById("mes-titulo");
             grid.innerHTML = "";
@@ -1619,7 +1777,7 @@
 
                 const keyFecha = formatDateKey(fecha);
                 const esGuardia = esDiaDeGuardiaBase(fecha);
-                const novedad = (usuarioActual.novedades || {})[keyFecha];
+                const novedad = novedadConFeriado(keyFecha);
 
                 if (fecha.toDateString() === fechaHoy.toDateString()) celda.classList.add("hoy");
 
@@ -1637,6 +1795,8 @@
                         const icon = document.createElement("span");
                         icon.className = "badge-feriado";
                         icon.textContent = "🎉";
+                        celda.title = "Feriado: " + feriadoDelDia(keyFecha).nombre;
+                        celda.setAttribute("aria-label", `${dia}. ${celda.title}`);
                         celda.appendChild(icon);
                     }
                     if (novedad.comentario) {
@@ -1697,6 +1857,9 @@
                 document.getElementById("modal-comentario").value = "";
             }
 
+            const feriado = feriadoDelDia(keyFecha);
+            document.getElementById('modal-nombre-feriado').value = feriado.nombre;
+            document.getElementById('nota-feriado-automatico').textContent = feriado.automatico ? `Calendario: ${feriado.automatico}` : 'Sin feriado automático para esta fecha. Puedes agregar uno propio.';
             document.getElementById("modal-dia").style.display = "flex";
         }
 
@@ -1709,12 +1872,21 @@
             const esFeriado = document.getElementById("modal-feriado").checked;
             const comentario = document.getElementById("modal-comentario").value.trim();
 
+            const anterior = feriadoDelDia(fechaSeleccionadaKey);
+            const nombreFeriado = document.getElementById('modal-nombre-feriado').value.trim();
+            if (esFeriado !== anterior.activo || (esFeriado && nombreFeriado !== anterior.nombre)) {
+                if (!usuarioActual.calendarioFeriados) usuarioActual.calendarioFeriados = {};
+                const cfg = usuarioActual.calendarioFeriados;
+                if (!cfg.ajustes) cfg.ajustes = {};
+                cfg.ajustes[`${cfg.pais || 'manual'}:${cfg.region || ''}:${fechaSeleccionadaKey}`] = { activo: esFeriado, nombre: nombreFeriado };
+            }
             if (!usuarioActual.novedades) usuarioActual.novedades = {};
+            const marcaManualAnterior = !!usuarioActual.novedades[fechaSeleccionadaKey]?.esFeriado;
 
-            if (estado === "normal" && !esFeriado && !comentario) {
+            if (estado === "normal" && !marcaManualAnterior && !comentario) {
                 delete usuarioActual.novedades[fechaSeleccionadaKey];
             } else {
-                usuarioActual.novedades[fechaSeleccionadaKey] = { estado, esFeriado, comentario };
+                usuarioActual.novedades[fechaSeleccionadaKey] = { estado, esFeriado: marcaManualAnterior, comentario };
             }
 
             actualizarSesionLocal();
@@ -2051,6 +2223,10 @@
 
             const mesInt = parseInt(mes);
             const anioInt = parseInt(anio);
+            if (configFeriados().pais) {
+                const disponibles = await cargarFeriados(anioInt);
+                if (!disponibles && !confirm('No hay feriados descargados para este año. ¿Exportar solo con los feriados manuales disponibles?')) return;
+            }
             const ultimoDia = new Date(anioInt, mesInt + 1, 0).getDate();
 
             const uitAnio = (PARAMETROS_PERU[anioInt] ? PARAMETROS_PERU[anioInt].uit : 5500);
@@ -2063,7 +2239,7 @@
                 const fecha = new Date(anioInt, mesInt, d);
                 const key = formatDateKey(fecha);
                 const esG = esDiaDeGuardiaBase(fecha);
-                const nov = (usuarioActual.novedades || {})[key];
+                const nov = novedadConFeriado(key, true);
 
                 let estado = esG ? "Guardia" : "Libre";
                 let esFer = "No";
